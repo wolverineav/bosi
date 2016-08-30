@@ -27,6 +27,6 @@ parameter_defaults:
   NeutronBigswitchRestproxyServerAuth: <Update-this-value>
   NeutronBigswitchRestproxyAutoSyncOnFailure: True
   NeutronBigswitchRestproxyConsistencyInterval: 10
-  NeutronBigswitchRestproxyNeutronId: rhosp8-virtual
+  NeutronBigswitchRestproxyNeutronId: <Update-this-value>
   NeutronBigswitchRestproxyServerSsl: True
   NeutronBigswitchRestproxySslCertDirectory: /var/lib/neutron
