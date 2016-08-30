@@ -1,0 +1,42 @@
+# Enable the creation of Neutron networks for isolated Overcloud
+# traffic and configure each role to assign ports (related
+# to that role) on these networks.
+# Many networks are disabled by default because they are not used
+# in a typical configuration. Override via parameter_defaults.
+resource_registry:
+  OS::TripleO::BlockStorage::Net::SoftwareConfig: /home/stack/templates/nic-configs/cinder-storage.yaml
+  OS::TripleO::Compute::Net::SoftwareConfig: /home/stack/templates/nic-configs/compute.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: /home/stack/templates/nic-configs/controller.yaml
+  OS::TripleO::ObjectStorage::Net::SoftwareConfig: /home/stack/templates/nic-configs/swift-storage.yaml
+  OS::TripleO::CephStorage::Net::SoftwareConfig: /home/stack/templates/nic-configs/ceph-storage.yaml
+
+parameter_defaults:
+  InternalApiNetCidr: <Update-this-value>
+  InternalApiAllocationPools: [{'start': '<Update-this-value>', 'end': '<Update-this-value>'}]
+  InternalApiNetworkVlanID: <Update-this-value>
+
+  TenantNetCidr: <Update-this-value>
+  TenantAllocationPools: [{'start': '<Update-this-value>', 'end': '<Update-this-value>'}]
+  TenantNetworkVlanID: <Update-this-value>
+
+  StorageNetCidr: <Update-this-value>
+  StorageAllocationPools: [{'start': '<Update-this-value>', 'end': '<Update-this-value>'}]
+  StorageNetworkVlanID: <Update-this-value>
+
+  StorageMgmtNetCidr: <Update-this-value>
+  StorageMgmtAllocationPools: [{'start': '<Update-this-value>', 'end': '<Update-this-value>'}]
+  StorageMgmtNetworkVlanID: <Update-this-value>
+
+  ExternalNetCidr: <Update-this-value>
+  ExternalAllocationPools: [{'start': '<Update-this-value>', 'end': '<Update-this-value>'}]
+  ExternalInterfaceDefaultRoute: <Update-this-value>
+  ExternalNetworkVlanID: <Update-this-value>
+
+  ControlPlaneSubnetCidr: "<Update-this-value>"
+  ControlPlaneDefaultRoute: <Update-this-value>
+  EC2MetadataIp: <Update-this-value>
+  DnsServers: 8.8.8.8
+  NeutronExternalNetworkBridge: "''"
+  # Customize bonding options if required
+  BondInterfaceOvsOptions: "mode=4 lacp_rate=1 updelay=1000 miimon=50"
+
