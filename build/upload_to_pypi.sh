@@ -37,6 +37,8 @@ rm -rf "$OUTDIR" && mkdir -p "$OUTDIR"
 mv /bosi/dist/*.tar.gz "$OUTDIR"
 mv /bosi/dist/*.tar.gz.asc "$OUTDIR"
 cp /bosi/bosi/scripts/* "$OUTDIR"
+cp -r /bosi/bosi/yamls "$OUTDIR"
+
 git log > "$OUTDIR/gitlog.txt"
 touch "$OUTDIR/build-$CURR_VERSION"
 ln -snf $(basename $OUTDIR) $OUTDIR/../latest
