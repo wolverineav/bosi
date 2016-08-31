@@ -10,33 +10,49 @@ resource_registry:
   OS::TripleO::ObjectStorage::Net::SoftwareConfig: /home/stack/templates/nic-configs/swift-storage.yaml
   OS::TripleO::CephStorage::Net::SoftwareConfig: /home/stack/templates/nic-configs/ceph-storage.yaml
 
+# This section is where deployment-specific configuration is done
 parameter_defaults:
-  InternalApiNetCidr: <Update-this-value>
-  InternalApiAllocationPools: [{'start': '<Update-this-value>', 'end': '<Update-this-value>'}]
-  InternalApiNetworkVlanID: <Update-this-value>
+  # Customize the IP subnets to match the local environment
+  InternalApiNetCidr: 172.17.0.0/24
+  StorageNetCidr: 172.18.0.0/24
+  StorageMgmtNetCidr: 172.19.0.0/24
+  TenantNetCidr: 172.16.0.0/24
+  ExternalNetCidr: 10.0.0.0/24
 
-  TenantNetCidr: <Update-this-value>
-  TenantAllocationPools: [{'start': '<Update-this-value>', 'end': '<Update-this-value>'}]
-  TenantNetworkVlanID: <Update-this-value>
+  # CIDR subnet mask length for provisioning network
+  ControlPlaneSubnetCidr: 24
 
-  StorageNetCidr: <Update-this-value>
-  StorageAllocationPools: [{'start': '<Update-this-value>', 'end': '<Update-this-value>'}]
-  StorageNetworkVlanID: <Update-this-value>
+  # Customize the IP ranges on each network to use for static IPs and VIPs
+  InternalApiAllocationPools: [{'start': '172.17.0.10', 'end': '172.17.0.200'}]
+  StorageAllocationPools: [{'start': '172.18.0.10', 'end': '172.18.0.200'}]
+  StorageMgmtAllocationPools: [{'start': '172.19.0.10', 'end': '172.19.0.200'}]
+  TenantAllocationPools: [{'start': '172.16.0.10', 'end': '172.16.0.200'}]
 
-  StorageMgmtNetCidr: <Update-this-value>
-  StorageMgmtAllocationPools: [{'start': '<Update-this-value>', 'end': '<Update-this-value>'}]
-  StorageMgmtNetworkVlanID: <Update-this-value>
+  # Leave room if the external network is also used for floating IPs
+  ExternalAllocationPools: [{'start': '10.0.0.10', 'end': '10.0.0.50'}]
 
-  ExternalNetCidr: <Update-this-value>
-  ExternalAllocationPools: [{'start': '<Update-this-value>', 'end': '<Update-this-value>'}]
-  ExternalInterfaceDefaultRoute: <Update-this-value>
-  ExternalNetworkVlanID: <Update-this-value>
+  # Gateway router for the external network
+  ExternalInterfaceDefaultRoute: 10.0.0.1
 
-  ControlPlaneSubnetCidr: "<Update-this-value>"
-  ControlPlaneDefaultRoute: <Update-this-value>
-  EC2MetadataIp: <Update-this-value>
-  DnsServers: 8.8.8.8
+  # Gateway router for the provisioning network (or Undercloud IP)
+  ControlPlaneDefaultRoute: 192.0.2.254
+
+  # Generally the IP of the Undercloud
+  EC2MetadataIp: 192.0.2.1
+
+  # Define the DNS servers (maximum 2) for the overcloud nodes
+  DnsServers: ["8.8.8.8","8.8.4.4"]
+
+  # Customize the VLAN IDs to match the local environment
+  InternalApiNetworkVlanID: 10
+  StorageNetworkVlanID: 20
+  StorageMgmtNetworkVlanID: 30
+  TenantNetworkVlanID: 40
+  ExternalNetworkVlanID: 50
+
+  # Set to empty string to enable multiple external networks or VLANs
   NeutronExternalNetworkBridge: "''"
+
   # Customize bonding options if required
   BondInterfaceOvsOptions: "mode=4 lacp_rate=1 updelay=1000 miimon=50"
 
