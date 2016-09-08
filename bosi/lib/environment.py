@@ -158,8 +158,17 @@ class Environment(object):
         if len(array) == 3:
             array = array[:-1]
         version = '.'.join(array)
-        self.bsnstacklib_version_lower = (prefix + '.' +
-            const.BCF_RELEASE_TO_BSN_LIB_LOWER[version])
+
+        # special handling for 'prev' release of openstack i.e. one lower than
+        # the current one. we may not bump the version since it supports
+        # prev release of BCF
+        if self.openstack_release == const.OS_RELEASE_PREV:
+            bcf_lower = const.BCF_RELEASE_TO_BSN_LIB_LOWER[
+                const.BCF_RELEASE_PREV]
+        else:
+            bcf_lower = const.BCF_RELEASE_TO_BSN_LIB_LOWER[version]
+
+        self.bsnstacklib_version_lower = (prefix + '.' + bcf_lower)
         self.bsnstacklib_version_upper = (prefix + '.' +
             const.BCF_RELEASE_TO_BSN_LIB_UPPER[version])
 
