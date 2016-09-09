@@ -25,6 +25,11 @@ OS_RELEASE_TO_BSN_LIB = {'kilo': '20151',
                          'liberty': '20153',
                          'mitaka': '8'}
 
+# prev release constant to better map lower bsnstacklib version.
+# these are branch specific aka release specific.
+OS_RELEASE_PREV = 'liberty'
+BCF_RELEASE_PREV = '3.6'
+
 #BCF release
 BCF_RELEASE_TO_BSN_LIB_LOWER = {'3.6': '36.0',
                                 '3.7': '37.0',
