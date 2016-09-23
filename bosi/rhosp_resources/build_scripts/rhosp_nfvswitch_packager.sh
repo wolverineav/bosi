@@ -19,11 +19,11 @@ rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/rhosp_nfvs
 
 # get bsnstacklib packages
 mkdir bsnstacklib
-rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/bsnstacklib/centos7-x86_64/$OpenstackBranch/latest/* ./bsnstacklib
+rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/bsnstacklib/centos7-x86_64/$OpenStackBranch/latest/* ./bsnstacklib
 
 # get horizon-bsn packages
 mkdir horizon-bsn
-rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/horizon-bsn/centos7-x86_64/$OpenstackBranch/latest/* ./horizon-bsn
+rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/horizon-bsn/centos7-x86_64/$OpenStackBranch/latest/* ./horizon-bsn
 
 # get bosi scripts
 mkdir bosi
@@ -78,7 +78,7 @@ mv tarball $TAR_NAME
 tar -zcvf $TAR_NAME.tar.gz $TAR_NAME
 
 # Copy built tarball to pkg/
-OUTDIR=$(readlink -m "pkg/$OpenstackBranch/$TAR_NAME")
+OUTDIR=$(readlink -m "pkg/$OpenStackBranch/$TAR_NAME")
 rm -rf "$OUTDIR" && mkdir -p "$OUTDIR"
 mv $TAR_NAME.tar.gz "$OUTDIR"
 ln -snf $(basename $OUTDIR) $OUTDIR/../latest
