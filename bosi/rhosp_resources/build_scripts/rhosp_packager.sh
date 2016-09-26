@@ -6,36 +6,30 @@
 # Revision
 # IvsBranch (optional)
 
-# mapping for OpenStackBranch to RHOSPVersion
+# mapping for OpenStackBranch to RHOSPVersion, default is latest = 9
 # occasionally cleanup when we stop supporting certain versions
-if [[ $OpenStackBranch == *"kilo"* ]]
-then
-        RHOSPVersion="7"
-fi
-if [[ $OpenStackBranch == *"liberty"* ]]
-then
-        RHOSPVersion="8"
-fi
-if [[ $OpenStackBranch == *"mitaka"* ]]
-then
-        RHOSPVersion="9"
-fi
+RHOSPVersion="9"
+case "$OpenStackBranch" in
+  *"mitaka"*) RHOSPVersion="9" ;;
+  *"liberty"*) RHOSPVersion="8" ;;
+  *"kilo"*) RHOSPVersion="7" ;;
+esac
 
 # if IvsBranch is not specified, it is same as BcfBranch
-if [[ -z  $IvsBranch  ]]
+if [ -z  $IvsBranch  ]
 then
     IvsBranch="$BcfBranch"
 fi
 
 # if branch is not master, append 'v' e.g. v3.7.0
-if [[ $IvsBranch != "master" ]]
+if [ $IvsBranch != "master" ]
 then
     IvsBranch="v$IvsBranch"
 fi
 
 # if BcfBranch is not master, append 'bcf-' to it
 BosiBranch="$BcfBranch"
-if [[ $BcfBranch != "master" ]]
+if [ $BcfBranch != "master" ]
 then
     BosiBranch="bcf-$BcfBranch"
 fi
