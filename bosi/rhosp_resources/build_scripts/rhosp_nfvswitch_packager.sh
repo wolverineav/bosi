@@ -2,9 +2,31 @@
 
 # Following build params expected for this script:
 # OpenStackBranch
-# BosiBranch
-# RHOSPVersion
+# BcfBranch
 # Revision
+
+# mapping for OpenStackBranch to RHOSPVersion, default set to 9
+# occasionally cleanup when we stop supporting certain versions
+RHOSPVersion="9"
+if [[ $OpenStackBranch == *"kilo"* ]]
+then
+        RHOSPVersion="7"
+fi
+if [[ $OpenStackBranch == *"liberty"* ]]
+then
+        RHOSPVersion="8"
+fi
+if [[ $OpenStackBranch == *"mitaka"* ]]
+then
+        RHOSPVersion="9"
+fi
+
+# if BcfBranch is not master, append 'bcf-' to it
+BosiBranch="$BcfBranch"
+if [[ $BcfBranch != "master" ]]
+then
+    BosiBranch="bcf-$BcfBranch"
+fi
 
 # cleanup old stuff
 sudo rm -rf *
