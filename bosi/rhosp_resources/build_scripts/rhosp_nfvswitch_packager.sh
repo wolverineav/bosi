@@ -2,9 +2,20 @@
 
 # Following build params expected for this script:
 # OpenStackBranch
-# BosiBranch
-# RHOSPVersion
-# Revision
+# BcfBranch
+
+# Revision is set to a constant 0. If ever this needs changing,
+# it can be added to build params
+Revision="0"
+
+# mapping for OpenStackBranch to RHOSPVersion, default is latest = 9
+# occasionally cleanup when we stop supporting certain versions
+RHOSPVersion="9"
+case "$OpenStackBranch" in
+  *"mitaka"*) RHOSPVersion="9" ;;
+  *"liberty"*) RHOSPVersion="8" ;;
+  *"kilo"*) RHOSPVersion="7" ;;
+esac
 
 # cleanup old stuff
 sudo rm -rf *
@@ -27,7 +38,7 @@ rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/horizon-bs
 
 # get bosi scripts
 mkdir bosi
-rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/bosi/$BosiBranch/latest/* ./bosi
+rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/bosi/$BcfBranch/latest/* ./bosi
 
 # grunt work aka packaging
 mkdir tarball
@@ -54,6 +65,12 @@ get_version () {
 NFVSWITCH_PKG="`ls ./tarball/nfvswitch-debug*`"
 get_version $NFVSWITCH_PKG
 NFVSWITCH_VERSION=$V
+
+# bsnstacklib and horizon-bsn is <openstack-version>.<bcf-version>.<bug-fix-id>
+# however, to maintain compatibility with lower version of bcf releases,
+# $BcfBranch specified for build and latest package's <bcf-version> may not be same.
+# e.g. liberty, 3.7 will still use liberty.36.x since liberty was first released with
+# BCF 3.6.0 and we want to retain support
 
 BSNLIB_PKG="`ls ./tarball/python-networking-bigswitch*`"
 get_version $BSNLIB_PKG
