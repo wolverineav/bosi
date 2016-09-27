@@ -3,8 +3,11 @@
 # Following build params expected for this script:
 # OpenStackBranch
 # BcfBranch
-# Revision
 # IvsBranch (optional)
+
+# Revision is set to a constant 0. If ever this needs changing,
+# it can be added to build params
+Revision="0"
 
 # mapping for OpenStackBranch to RHOSPVersion, default is latest = 9
 # occasionally cleanup when we stop supporting certain versions
