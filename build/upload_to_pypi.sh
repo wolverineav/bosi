@@ -36,8 +36,7 @@ OUTDIR=$(readlink -m "/bosi/dist/$GIT_BRANCH/$CURR_VERSION")
 rm -rf "$OUTDIR" && mkdir -p "$OUTDIR"
 mv /bosi/dist/*.tar.gz "$OUTDIR"
 mv /bosi/dist/*.tar.gz.asc "$OUTDIR"
-cp /bosi/bosi/scripts/* "$OUTDIR"
-cp -r /bosi/bosi/yamls "$OUTDIR"
+cp -r /bosi/bosi/rhosp_resources "$OUTDIR"
 
 git log > "$OUTDIR/gitlog.txt"
 touch "$OUTDIR/build-$CURR_VERSION"
