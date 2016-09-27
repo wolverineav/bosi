@@ -153,24 +153,15 @@ class Environment(object):
 
         # openstack bsnstacklib version - applies to horizon plugin too
         self.openstack_release = str(config['openstack_release']).lower()
-        prefix = const.OS_RELEASE_TO_BSN_LIB.get(self.openstack_release)
         array = self.bcf_version.split('.')
         if len(array) == 3:
             array = array[:-1]
-        version = '.'.join(array)
+        two_digit_bcfversion = '.'.join(array)
 
-        # special handling for 'prev' release of openstack i.e. one lower than
-        # the current one. we may not bump the version since it supports
-        # prev release of BCF
-        if self.openstack_release == const.OS_RELEASE_PREV:
-            bcf_lower = const.BCF_RELEASE_TO_BSN_LIB_LOWER[
-                const.BCF_RELEASE_PREV]
-        else:
-            bcf_lower = const.BCF_RELEASE_TO_BSN_LIB_LOWER[version]
-
-        self.bsnstacklib_version_lower = (prefix + '.' + bcf_lower)
-        self.bsnstacklib_version_upper = (prefix + '.' +
-            const.BCF_RELEASE_TO_BSN_LIB_UPPER[version])
+        self.bsnstacklib_version_lower = const.OS_BCF_MAPPING_LOWER[
+            self.openstack_release][two_digit_bcfversion]
+        self.bsnstacklib_version_upper = const.OS_BCF_MAPPING_UPPER[
+            self.openstack_release][two_digit_bcfversion]
 
         # master bcf controller and cookie
         self.bcf_master = None
