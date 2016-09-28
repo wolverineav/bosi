@@ -21,22 +21,38 @@ T5 = 't5'
 MODE_DICT = {'pfabric': T5,
              'pvfabric': T6}
 
-OS_RELEASE_TO_BSN_LIB = {'kilo': '20151',
-                         'liberty': '20153',
-                         'mitaka': '8'}
+OS_BCF_MAPPING_LOWER = {
+    'kilo': {
+        '3.6': '20151.36'
+    },
+    'liberty': {
+        '3.6': '20153.36',
+        '3.7': '20153.36',
+        '4.0': '20153.36'
+    },
+    'mitaka': {
+        '3.7': '8.37',
+        '4.0': '8.37'
+    }
+}
 
-# prev release constant to better map lower bsnstacklib version.
-# these are branch specific aka release specific.
-OS_RELEASE_PREV = 'liberty'
-BCF_RELEASE_PREV = '3.6'
-
-#BCF release
-BCF_RELEASE_TO_BSN_LIB_LOWER = {'3.6': '36.0',
-                                '3.7': '37.0',
-                                '4.0': '40.0'}
-BCF_RELEASE_TO_BSN_LIB_UPPER = {'3.6': '37.0',
-                                '3.7': '38.0',
-                                '4.0': '41.0'}
+OS_BCF_MAPPING_UPPER = {
+    'kilo': {
+        '3.6': '20151.37'
+    },
+    'liberty': {
+        '3.6': '20153.37',
+        '3.7': '20153.38',
+        '4.0': '20153.41'
+    },
+    'mitaka': {
+        # NOTE : we released a 8.40 by mistake and cannot downgrade on pypi,
+        # hence upper is 8.41 instead of 8.38. we'll have to keep track
+        # of incompatibilities to make sure it doesn't break anything
+        '3.7': '8.41',
+        '4.0': '8.41'
+    }
+}
 
 # Since kilo and BCF 3.5, we use tenant name
 # instead of tenant uuid to configure tenants,
