@@ -1637,10 +1637,12 @@ class Helper(object):
         # required version is node.ivs_version
         output = Helper.run_command_on_remote(node, r'''ivs --version''')
         # version string looks like this:
-        # ivs 3.0.0 (2015-08-14.18:26-39a875b trusty-amd64)
+        # ivs 3.0.0 (2015-08-14.18:26-39a875b trusty-amd64) or
+        # ivs 4.0.0-beta1 (2016-09-30.05:05-0a88b15 centos7-x86_64)
         split_version = string.split(output, ' ')
         # split_version[1] would be empty in error scenario
-        if node.ivs_version == split_version[1]:
+        if (split_version[1] and
+                (node.ivs_version == string.split(split_version[1], '-')[0])):
             return ':-)'
         else:
             return (':-( Expected ' + node.ivs_version +
