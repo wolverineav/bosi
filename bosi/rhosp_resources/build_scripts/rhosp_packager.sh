@@ -42,9 +42,15 @@ get_version () {
     V=${B##*-};
 }
 
-IVS_PKG="`ls ./tarball/ivs-debug*`"
-get_version $IVS_PKG
-IVS_VERSION=$V
+# given $BcfBranch is master, IVS_VERSION will be whatever value set in master.
+# hence we take it from package name
+IVS_VERSION="$IvsBranch"
+if [ "$IVS_VERSION" == "master" ]
+then
+    IVS_PKG="`ls ./tarball/ivs-debug*`"
+    get_version $IVS_PKG
+    IVS_VERSION=$V
+fi
 
 BSNLIB_PKG="`ls ./tarball/python-networking-bigswitch*`"
 get_version $BSNLIB_PKG
