@@ -62,9 +62,13 @@ get_version () {
 
 # given $BcfBranch is master, IVS_VERSION will be whatever value set in master.
 # hence we take it from package name
-IVS_PKG="`ls ./tarball/ivs-debug*`"
-get_version $IVS_PKG
-IVS_VERSION=$V
+IVS_VERSION="$IvsBranch"
+if [ "$IVS_VERSION" == "master" ]
+then
+    IVS_PKG="`ls ./tarball/ivs-debug*`"
+    get_version $IVS_PKG
+    IVS_VERSION=$V
+fi
 
 # bsnstacklib and horizon-bsn is <openstack-version>.<bcf-version>.<bug-fix-id>
 # however, to maintain compatibility with lower version of bcf releases,
