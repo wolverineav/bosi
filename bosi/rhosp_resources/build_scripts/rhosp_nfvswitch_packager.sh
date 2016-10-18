@@ -19,7 +19,6 @@ esac
 
 # if IvsBranch is not specified, it is same as BcfBranch
 if [ -z "${IvsBranch+x}" ]; then
-then
     IvsBranch="$BcfBranch"
 fi
 
