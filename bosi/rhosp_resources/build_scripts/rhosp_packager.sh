@@ -19,7 +19,7 @@ case "$OpenStackBranch" in
 esac
 
 # if IvsBranch is not specified, it is same as BcfBranch
-if [ -z  $IvsBranch  ]
+if [ -z "${IvsBranch+x}" ]; then
 then
     IvsBranch="$BcfBranch"
 fi
