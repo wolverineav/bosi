@@ -17,6 +17,12 @@ case "$OpenStackBranch" in
   *"kilo"*) RHOSPVersion="7" ;;
 esac
 
+# if IvsBranch is not specified, it is same as BcfBranch
+if [ -z "${IvsBranch+x}" ]; then
+then
+    IvsBranch="$BcfBranch"
+fi
+
 # cleanup old stuff
 sudo rm -rf *
 
