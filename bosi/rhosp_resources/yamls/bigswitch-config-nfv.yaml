@@ -16,6 +16,7 @@ parameters:
     nova::scheduler::filter::scheduler_default_filters:
         - AvailabilityZoneFilter
         - RamFilter
+        - RetryFilter
         - ComputeFilter
         - ComputeCapabilitiesFilter
         - ImagePropertiesFilter
@@ -37,6 +38,7 @@ parameters:
     nova::scheduler::filter::scheduler_default_filters:
         - AvailabilityZoneFilter
         - RamFilter
+        - RetryFilter
         - ComputeFilter
         - ComputeCapabilitiesFilter
         - ImagePropertiesFilter
