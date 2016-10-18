@@ -111,10 +111,10 @@ resources:
               members:
                 -
                   type: interface
-                  name: eno1
+                  name: <Update-this-value, e.g. nic2 or p1p1>
                 -
                   type: interface
-                  name: eno2
+                  name: <Update-this-value, e.g. nic3 or p1p2>
                 -
                   type: ivs_interface
                   name: api
