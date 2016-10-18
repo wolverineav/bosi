@@ -47,10 +47,10 @@ parameters:
     - '::nova::scheduler::filter'
 
 parameter_defaults:
-  NeutronBigswitchRestproxyServers: 10.8.29.15:8000,10.8.29.14:8000
-  NeutronBigswitchRestproxyServerAuth: admin:adminadmin
+  NeutronBigswitchRestproxyServers: <Update-this-value>
+  NeutronBigswitchRestproxyServerAuth: <Update-this-value>
   NeutronBigswitchRestproxyAutoSyncOnFailure: True
   NeutronBigswitchRestproxyConsistencyInterval: 10
-  NeutronBigswitchRestproxyNeutronId: rhosp9-nfv #<<< Name used to prefix the tenant/project name on BCF.
+  NeutronBigswitchRestproxyNeutronId: <Update-this-value>
   NeutronBigswitchRestproxyServerSsl: True
   NeutronBigswitchRestproxySslCertDirectory: /var/lib/neutron
