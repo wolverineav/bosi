@@ -18,4 +18,7 @@ virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload osnet-patch/impl_if
 virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload osnet-patch/__init__.py:/usr/lib/python2.7/site-packages/os_net_config/__init__.py
 virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload osnet-patch/objects.py:/usr/lib/python2.7/site-packages/os_net_config/objects.py
 
+# Temp work-around to set selinux to permissive mode to allow QEMU access to vhost-user
+virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload selinux-config:/etc/selinux/config
+
 virt-customize -a ${image_dir}/overcloud-full.qcow2 --firstboot startup.sh
