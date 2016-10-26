@@ -98,7 +98,16 @@ resources:
                   next_hop: {get_param: ControlPlaneDefaultRoute}
             -
               type: nfvswitch_bridge
-              cpus: "2,3,4,5"
+              options: "-c 2-5 --physnet datacentre"
+              members:
+                -
+                  type: interface
+                  name: <Update-this-value, e.g. p1p1 or enp129s0f0>
+                -
+                  type: interface
+                  name: <Update-this-value, e.g. p1p2 or enp129s0f1>
+            -
+              type: ivs_bridge
               members:
                 -
                   type: interface
@@ -107,14 +116,14 @@ resources:
                   type: interface
                   name: <Update-this-value, e.g. nic3 or p1p2>
                 -
-                  type: nfvswitch_internal
+                  type: ivs_interface
                   name: api
                   vlan_id: {get_param: InternalApiNetworkVlanID}
                   addresses:
                     -
                       ip_netmask: {get_param: InternalApiIpSubnet}
                 -
-                  type: nfvswitch_internal
+                  type: ivs_interface
                   name: storage
                   vlan_id: {get_param: StorageNetworkVlanID}
                   addresses:
