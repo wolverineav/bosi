@@ -20,10 +20,10 @@ contains the Big Switch virtual switch agent
 python-horizon-bsn-${horizon_bsn_version}-1.el7.centos.noarch.rpm
 contains the Big Switch horizon plugin
 
-ivs-${ivs_version}-1.el7.centos.x86_64.rpm
+ivs-${ivs_version}.el7.centos.x86_64.rpm
 contains the Big Switch switch light virtual
 
-ivs-debuginfo-${ivs_version}-1.el7.centos.x86_64.rpm
+ivs-debuginfo-${ivs_version}.el7.centos.x86_64.rpm
 contains the Big Switch switch light virtual debugging tools
 
 ifup-ivs
