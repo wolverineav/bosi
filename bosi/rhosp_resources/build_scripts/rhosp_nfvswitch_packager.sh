@@ -77,10 +77,13 @@ then
     IVS_VERSION=$V
 fi
 
-
-NFVSWITCH_PKG="`ls ./tarball/nfvswitch-debug*`"
-get_version $NFVSWITCH_PKG
-NFVSWITCH_VERSION=$V
+NFVSWITCH_VERSION="$IvsBranch"
+if [ "$NFVSWITCH_VERSION" == "master" ]
+then
+    NFVSWITCH_PKG="`ls ./tarball/nfvswitch-debug*`"
+    get_version $NFVSWITCH_PKG
+    NFVSWITCH_VERSION=$V
+fi
 
 # bsnstacklib and horizon-bsn is <openstack-version>.<bcf-version>.<bug-fix-id>
 # however, to maintain compatibility with lower version of bcf releases,
