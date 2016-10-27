@@ -16,8 +16,8 @@ systemctl enable neutron-bsn-lldp.service
 systemctl restart neutron-bsn-lldp.service
 
 if [[ $(hostname) == *compute* ]]; then
-    rpm -ivh --force /root/ivs-${ivs_version}-1.el7.centos.x86_64.rpm
-    rpm -ivh --force /root/ivs-debuginfo-${ivs_version}-1.el7.centos.x86_64.rpm
+    rpm -ivh --force /root/ivs-${ivs_version}.el7.centos.x86_64.rpm
+    rpm -ivh --force /root/ivs-debuginfo-${ivs_version}.el7.centos.x86_64.rpm
     rpm -ivh --force /root/nfvswitch-${nfvswitch_version}-1.el7.centos.x86_64.rpm
     rpm -ivh --force /root/nfvswitch-debuginfo-${nfvswitch_version}-1.el7.centos.x86_64.rpm
 
