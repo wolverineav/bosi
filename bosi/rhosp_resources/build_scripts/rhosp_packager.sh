@@ -89,12 +89,12 @@ echo "horizon-bsn version is" $HORIZON_BSN_VERSION
 
 # IVS_VERSION_REVISION includes ivs version with its revision number, default = -1. redhat naming convention
 # that needs to be adhered.
-IVS_VERSION_REVISION = "$IVS_VERSION""-1"
+IVS_VERSION_REVISION="$IVS_VERSION""-1"
 # for beta releases, revision is preappended, no changes required
 # i.e. 4.0.0-beta1 already has revision set to beta1
 if [[ "$IVS_VERSION" == *"beta"* ]]
 then
-    IVS_VERSION_REVISION = "$IVS_VERSION"
+    IVS_VERSION_REVISION="$IVS_VERSION"
 fi
 
 sed -i -e "s/\${bsnstacklib_version}/$BSNSTACKLIB_VERSION/" -e "s/\${horizon_bsn_version}/$HORIZON_BSN_VERSION/" -e "s/\${ivs_version}/$IVS_VERSION_REVISION/" ./tarball/customize.sh
