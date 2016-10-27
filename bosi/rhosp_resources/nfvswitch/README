@@ -20,7 +20,7 @@ contains the Big Switch virtual switch agent
 python-horizon-bsn-${horizon_bsn_version}-1.el7.centos.noarch.rpm
 contains the Big Switch horizon plugin
 
-nfvswitch-${nfvswitch_version}-1.el7.centos.x86_64.rpm
+nfvswitch-${nfvswitch_version}.el7.centos.x86_64.rpm
 contains the Big Switch switch light virtual
 
 qemu-system-x86-2.5.0-4bsn1.el7.centos.x86_64.rpm
