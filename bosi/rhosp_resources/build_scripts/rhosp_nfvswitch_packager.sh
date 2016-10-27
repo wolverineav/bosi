@@ -67,9 +67,23 @@ get_version () {
     V=${B##*-};
 }
 
-NFVSWITCH_PKG="`ls ./tarball/nfvswitch-debug*`"
-get_version $NFVSWITCH_PKG
-NFVSWITCH_VERSION=$V
+# given $BcfBranch is master, IVS_VERSION will be whatever value set in master.
+# hence we take it from package name
+IVS_VERSION="$IvsBranch"
+if [ "$IVS_VERSION" == "master" ]
+then
+    IVS_PKG="`ls ./tarball/ivs-debug*`"
+    get_version $IVS_PKG
+    IVS_VERSION=$V
+fi
+
+NFVSWITCH_VERSION="$IvsBranch"
+if [ "$NFVSWITCH_VERSION" == "master" ]
+then
+    NFVSWITCH_PKG="`ls ./tarball/nfvswitch-debug*`"
+    get_version $NFVSWITCH_PKG
+    NFVSWITCH_VERSION=$V
+fi
 
 # bsnstacklib and horizon-bsn is <openstack-version>.<bcf-version>.<bug-fix-id>
 # however, to maintain compatibility with lower version of bcf releases,
