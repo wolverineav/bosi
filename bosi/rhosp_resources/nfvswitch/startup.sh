@@ -18,8 +18,8 @@ systemctl restart neutron-bsn-lldp.service
 if [[ $(hostname) == *compute* ]]; then
     rpm -ivh --force /root/ivs-${ivs_version}-1.el7.centos.x86_64.rpm
     rpm -ivh --force /root/ivs-debuginfo-${ivs_version}-1.el7.centos.x86_64.rpm
-    rpm -ivh --force /root/nfvswitch-0.1.0-1.el7.centos.x86_64.rpm
-    rpm -ivh --force /root/nfvswitch-debuginfo-0.1.0-1.el7.centos.x86_64.rpm
+    rpm -ivh --force /root/nfvswitch-${nfvswitch_version}-1.el7.centos.x86_64.rpm
+    rpm -ivh --force /root/nfvswitch-debuginfo-${nfvswitch_version}-1.el7.centos.x86_64.rpm
 
     grubby --update-kernel=ALL --args="isolcpus=$ISOL_CPU nohz_full=$ISOL_CPU hugepages=$HUGEPAGES iommu=pt intel_iommu=on"
     reboot
