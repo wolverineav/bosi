@@ -10,8 +10,8 @@ virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload openstack-neutron-b
 virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload python-horizon-bsn-${horizon_bsn_version}-1.el7.centos.noarch.rpm:/root/
 virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload ivs-${ivs_version}.el7.centos.x86_64.rpm:/root/
 virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload ivs-debuginfo-${ivs_version}.el7.centos.x86_64.rpm:/root/
-virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload nfvswitch-${nfvswitch_version}-1.el7.centos.x86_64.rpm:/root/
-virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload nfvswitch-debuginfo-${nfvswitch_version}-1.el7.centos.x86_64.rpm:/root/
+virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload nfvswitch-${nfvswitch_version}.el7.centos.x86_64.rpm:/root/
+virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload nfvswitch-debuginfo-${nfvswitch_version}.el7.centos.x86_64.rpm:/root/
 
 # Temp work-around to include os-net-config patch with RHOSP9: Enable os-net-config to support and configure NFVSwitch
 virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload osnet-patch/impl_ifcfg.py:/usr/lib/python2.7/site-packages/os_net_config/impl_ifcfg.py
