@@ -17,6 +17,11 @@ case "$OpenStackBranch" in
   *"kilo"*) RHOSPVersion="7" ;;
 esac
 
+# if IvsBranch is not specified, it is same as BcfBranch
+if [ -z "${IvsBranch+x}" ]; then
+    IvsBranch="$BcfBranch"
+fi
+
 # cleanup old stuff
 sudo rm -rf *
 
@@ -62,9 +67,23 @@ get_version () {
     V=${B##*-};
 }
 
-NFVSWITCH_PKG="`ls ./tarball/nfvswitch-debug*`"
-get_version $NFVSWITCH_PKG
-NFVSWITCH_VERSION=$V
+# given $BcfBranch is master, IVS_VERSION will be whatever value set in master.
+# hence we take it from package name
+IVS_VERSION="$IvsBranch"
+if [ "$IVS_VERSION" == "master" ]
+then
+    IVS_PKG="`ls ./tarball/ivs-debug*`"
+    get_version $IVS_PKG
+    IVS_VERSION=$V
+fi
+
+NFVSWITCH_VERSION="$IvsBranch"
+if [ "$NFVSWITCH_VERSION" == "master" ]
+then
+    NFVSWITCH_PKG="`ls ./tarball/nfvswitch-debug*`"
+    get_version $NFVSWITCH_PKG
+    NFVSWITCH_VERSION=$V
+fi
 
 # bsnstacklib and horizon-bsn is <openstack-version>.<bcf-version>.<bug-fix-id>
 # however, to maintain compatibility with lower version of bcf releases,
@@ -84,10 +103,19 @@ echo "nfvswitch version is" $NFVSWITCH_VERSION
 echo "bsnstacklib version is" $BSNSTACKLIB_VERSION
 echo "horizon-bsn version is" $HORIZON_BSN_VERSION
 
-sed -i -e "s/\${bsnstacklib_version}/$BSNSTACKLIB_VERSION/" -e "s/\${horizon_bsn_version}/$HORIZON_BSN_VERSION/" -e "s/\${nfvswitch_version}/$NFVSWITCH_VERSION/" ./tarball/customize.sh
-sed -i -e "s/\${bsnstacklib_version}/$BSNSTACKLIB_VERSION/" -e "s/\${horizon_bsn_version}/$HORIZON_BSN_VERSION/" -e "s/\${nfvswitch_version}/$NFVSWITCH_VERSION/" ./tarball/startup_compute.sh
-sed -i -e "s/\${bsnstacklib_version}/$BSNSTACKLIB_VERSION/" -e "s/\${horizon_bsn_version}/$HORIZON_BSN_VERSION/" -e "s/\${nfvswitch_version}/$NFVSWITCH_VERSION/" ./tarball/startup_controller.sh
-sed -i -e "s/\${bsnstacklib_version}/$BSNSTACKLIB_VERSION/" -e "s/\${horizon_bsn_version}/$HORIZON_BSN_VERSION/" -e "s/\${nfvswitch_version}/$NFVSWITCH_VERSION/" ./tarball/README
+# IVS_VERSION_REVISION includes ivs version with its revision number, default = -1. redhat naming convention
+# that needs to be adhered.
+IVS_VERSION_REVISION="$IVS_VERSION""-1"
+# for beta releases, revision is preappended, no changes required
+# i.e. 4.0.0-beta1 already has revision set to beta1
+if [[ "$IVS_VERSION" == *"beta"* ]]
+then
+    IVS_VERSION_REVISION="$IVS_VERSION"
+fi
+
+sed -i -e "s/\${bsnstacklib_version}/$BSNSTACKLIB_VERSION/" -e "s/\${horizon_bsn_version}/$HORIZON_BSN_VERSION/" -e "s/\${nfvswitch_version}/$NFVSWITCH_VERSION/" -e "s/\${ivs_version}/$IVS_VERSION_REVISION/" ./tarball/customize.sh
+sed -i -e "s/\${bsnstacklib_version}/$BSNSTACKLIB_VERSION/" -e "s/\${horizon_bsn_version}/$HORIZON_BSN_VERSION/" -e "s/\${nfvswitch_version}/$NFVSWITCH_VERSION/" -e "s/\${ivs_version}/$IVS_VERSION_REVISION/" ./tarball/startup.sh
+sed -i -e "s/\${bsnstacklib_version}/$BSNSTACKLIB_VERSION/" -e "s/\${horizon_bsn_version}/$HORIZON_BSN_VERSION/" -e "s/\${nfvswitch_version}/$NFVSWITCH_VERSION/" -e "s/\${ivs_version}/$IVS_VERSION_REVISION/" ./tarball/README
 
 DATE=`date +%Y-%m-%d`
 TAR_NAME="BCF-RHOSP-$RHOSPVersion-plugins-$NFVSWITCH_VERSION.$Revision-$DATE"

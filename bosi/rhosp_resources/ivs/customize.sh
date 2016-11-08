@@ -8,8 +8,8 @@ virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload python-networking-b
 virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload openstack-neutron-bigswitch-lldp-${bsnstacklib_version}-1.el7.centos.noarch.rpm:/root/
 virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload openstack-neutron-bigswitch-agent-${bsnstacklib_version}-1.el7.centos.noarch.rpm:/root/
 virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload python-horizon-bsn-${horizon_bsn_version}-1.el7.centos.noarch.rpm:/root/
-virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload ivs-${ivs_version}-1.el7.centos.x86_64.rpm:/root/
-virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload ivs-debuginfo-${ivs_version}-1.el7.centos.x86_64.rpm:/root/
+virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload ivs-${ivs_version}.el7.centos.x86_64.rpm:/root/
+virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload ivs-debuginfo-${ivs_version}.el7.centos.x86_64.rpm:/root/
 
 virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload ifup-ivs:/etc/sysconfig/network-scripts/ifup-ivs
 virt-customize -a ${image_dir}/overcloud-full.qcow2 --run-command 'chmod a+x /etc/sysconfig/network-scripts/ifup-ivs'

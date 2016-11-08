@@ -30,11 +30,11 @@ bcf_controller_passwd: adminadmin
 # mandatory for fuel deployment, the tenant name for fuel networks
 bcf_openstack_management_tenant: os-mgmt
 
-# mandatory if the openstack installer takes over pxe boot (fuel)
+# mandatory if the openstack installer takes over pxe boot (fuel, rhosp)
 # It will be the default gw for all nodes if external gw is not specified.
 installer_pxe_interface_ip: 192.168.1.1
 
-# mandatory if the openstack installer can list all nodes (fuel).
+# mandatory if the openstack installer can list all nodes (fuel, rhosp).
 # bosi directly gets node list from openstack installer
 # and deploys bcf patch to all of them by default.
 # If user wants to deploy bcf patch only on specified
@@ -44,6 +44,13 @@ deploy_to_specified_nodes_only: false
 # mandatory, used to let bcf ml2 plugin differenciate different openstack clusters
 neutron_id: neutron
 
+# mandatory for rhosp, red hat registration information
+rhosp_automate_register: true
+rhosp_installer_management_interface: eno2
+rhosp_installer_pxe_interface: eno1
+rhosp_undercloud_dns: 8.8.8.8
+rhosp_register_username: bigswitch
+rhosp_register_passwd: bigswitch
 
 # All following configurations can be overrided by openstack installers
 
