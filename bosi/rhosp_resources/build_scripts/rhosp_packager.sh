@@ -34,9 +34,14 @@ rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/xenon-bsn/
 mkdir bsnstacklib
 rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/bsnstacklib/centos7-x86_64/$OpenStackBranch/latest/* ./bsnstacklib
 
+# since we have special branching for bsnstacklib, we need to sanitize it for horizon-bsn package
+HorizonBsnBranch="$OpenStackBranch"
+if [[ "$OpenStackBranch" == *"liberty_ksv3"* ]]; then
+    HorizonBsnBranch="origin/stable/liberty"
+fi
 # get horizon-bsn packages
 mkdir horizon-bsn
-rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/horizon-bsn/centos7-x86_64/$OpenStackBranch/latest/* ./horizon-bsn
+rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/horizon-bsn/centos7-x86_64/$HorizonBsnBranch/latest/* ./horizon-bsn
 
 # get bosi packages
 mkdir bosi
