@@ -13,6 +13,7 @@ Revision="0"
 # occasionally cleanup when we stop supporting certain versions
 RHOSPVersion="9"
 case "$OpenStackBranch" in
+  *"newton"*) RHOSPVersion="10" ;;
   *"mitaka"*) RHOSPVersion="9" ;;
   *"liberty"*) RHOSPVersion="8" ;;
   *"kilo"*) RHOSPVersion="7" ;;
