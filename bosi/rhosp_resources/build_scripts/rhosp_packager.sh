@@ -66,8 +66,9 @@ get_version () {
 
 # given $BcfBranch is master, IVS_VERSION will be whatever value set in master.
 # hence we take it from package name
+# unconventional naming in 3.6.2-A special release
 IVS_VERSION="$IvsBranch"
-if [ "$IVS_VERSION" == "master" ]
+if [ "$IVS_VERSION" == "master" ] || [ "$IVS_VERSION" == "3.6.2-A" ]
 then
     IVS_PKG="`ls ./tarball/ivs-debug*`"
     get_version $IVS_PKG
