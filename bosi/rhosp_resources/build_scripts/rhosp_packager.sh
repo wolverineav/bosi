@@ -37,7 +37,7 @@ rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/bsnstackli
 
 # since we have special branching for bsnstacklib, we need to sanitize it for horizon-bsn package
 HorizonBsnBranch="$OpenStackBranch"
-if [[ "$OpenStackBranch" == *"liberty_ksv3"* ]]; then
+if [[ "$OpenStackBranch" == *"liberty"* ]]; then
     HorizonBsnBranch="origin/stable/liberty"
 fi
 # get horizon-bsn packages
