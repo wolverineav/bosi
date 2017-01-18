@@ -1133,34 +1133,110 @@ class Helper(object):
     @staticmethod
     def load_nodes_from_rhosp(node_yaml_config_map, env):
         safe_print("Retrieving list of rhosp nodes\n")
+
+        # first, get UUID and ctlplane IP from nova list
+        # sample output:
+        # node_list = "
+        #     +--------------------------------------+------------------------+--------+------------+-------------+---------------------+
+        #     | ID                                   | Name                   | Status | Task State | Power State | Networks            |
+        #     +--------------------------------------+------------------------+--------+------------+-------------+---------------------+
+        #     | 12922d02-be83-47d2-820b-40944ff42fc3 | overcloud-compute-0    | ACTIVE | -          | Running     | ctlplane=192.0.2.33 |
+        #     | ae7333a5-8f48-41e5-a870-4011ba657ec2 | overcloud-controller-0 | ACTIVE | -          | Running     | ctlplane=192.0.2.32 |
+        #     +--------------------------------------+------------------------+--------+------------+-------------+---------------------+"
         cmd = (r'''source %(stackrc)s; nova list'''
                % {'stackrc': const.RHOSP_UNDERCLOUD_OPENRC})
         node_list, errors = Helper.run_command_on_local_without_timeout(cmd)
         if errors:
             raise Exception("Error Loading node list from rhosp:\n%(errors)s\n"
                             % {'errors': errors})
-
         node_dic = {}
         membership_rules = {}
-        try:
-            lines = [l for l in node_list.splitlines()
-                     if '----' not in l and 'Status' not in l]
-            for line in lines:
-                online = str(line.split('|')[3].strip())
-                if online.lower() != 'active':
-                    continue
+
+        lines = [l for l in node_list.splitlines()
+                 if '----' not in l and 'Status' not in l]
+        for line in lines:
+            try:
+                columns = line.split('|')
+
+                online = str(columns[3].strip())
+                instance_uuid = str(columns[1].strip())
                 hostname = str(
-                    netaddr.IPAddress(line.split('|')[6].strip()
-                    .split('=')[1]))
-                role = str(line.split('|')[2].strip().split('-')[1]).lower()
-                node = Helper.__load_rhosp_node__(
-                    hostname, role, node_yaml_config_map, env)
-                if (not node) or (not node.hostname):
+                    netaddr.IPAddress(columns[6].strip().split('=')[1]))
+            except IndexError:
+                raise Exception("Could not parse node list:\n%(node_list)s\n"
+                                % {'node_list': node_list})
+
+            if online.lower() != 'active':
+                # skip offline nodes
+                continue
+
+            if not hostname:
+                safe_print("Skipping node with instance UUID "
+                           "%(instance_uuid)s due to missing ctlplane IP\n"
+                           % {'instance_uuid': instance_uuid})
+                continue
+
+            # get role from ironic node-show
+            # sample output:
+            # node_info = "
+            #     +------------+------------------------------------------------------------------------+
+            #     | Property   | Value                                                                  |
+            #     +------------+------------------------------------------------------------------------+
+            #     | properties | {u'memory_mb': u'32768', u'cpu_arch': u'x86_64', u'local_gb': u'464',  |
+            #     |            | u'cpus': u'12', u'capabilities': u'profile:control,boot_option:local'} |
+            #     +------------+------------------------------------------------------------------------+"
+            cmd = (r'''source %(stackrc)s; ironic node-show \
+                       --instance %(instance_uuid)s --fields properties'''
+                   % {'stackrc': const.RHOSP_UNDERCLOUD_OPENRC,
+                      'instance_uuid': instance_uuid})
+            node_info, errors = \
+                Helper.run_command_on_local_without_timeout(cmd)
+            if errors:
+                safe_print("Skipping node with instance UUID "
+                           "%(instance_uuid)s and ctlplane IP "
+                           "%(ctlplane_ip)s because ironic node show "
+                           "failed: \n%(errors)s\n"
+                           % {'instance_uuid': instance_uuid,
+                              'ctlplane_ip': hostname,
+                              'errors': errors})
+                continue
+
+            profile_lines = [l for l in node_info.splitlines()
+                             if 'profile' in l]
+
+            role = ''
+            for role_line in profile_lines:
+                if not role_line:
                     continue
-                node_dic[node.hostname] = node
-        except IndexError:
-            raise Exception("Could not parse node list:\n%(node_list)s\n"
-                            % {'node_list': node_list})
+
+                try:
+                    role = str(role_line.split('|')[2].strip())
+                except IndexError:
+                    safe_print("Skipping node with instance UUID "
+                               "%(instance_uuid)s and ctlplane IP "
+                               "%(ctlplane_ip)s due to parsing error in "
+                               "output from ironic node show : "
+                               "\n%(errors)s\n"
+                               % {'instance_uuid': instance_uuid,
+                                  'ctlplane_ip': hostname,
+                                  'errors': errors})
+
+                if 'control' in role:
+                    role = const.ROLE_NEUTRON_SERVER
+                elif 'compute' in role:
+                    role = const.ROLE_COMPUTE
+                elif 'ceph' in role:
+                    role = const.ROLE_CEPH
+                else:
+                    # unknown role, continue
+                    continue
+
+            node = Helper.__load_rhosp_node__(
+                hostname, role, node_yaml_config_map, env)
+            if (not node) or (not node.hostname):
+                continue
+            node_dic[node.hostname] = node
+
         return node_dic, membership_rules
 
     @staticmethod
