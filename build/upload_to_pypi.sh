@@ -18,7 +18,7 @@ git tag -f -s $CURR_VERSION -m $CURR_VERSION -u "Big Switch Networks"
 python setup.py sdist
 
 # get packages for offline installation
-pip download --requirement requirements.txt --dest bosi_offline/dependencies
+pip install --download --requirement requirements.txt --dest bosi_offline/dependencies
 cp dist/* bosi_offline/
 tar -zcvf bosi_offline_packages_$CURR_VERSION.tar.gz bosi_offline
 
