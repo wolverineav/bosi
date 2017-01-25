@@ -2,5 +2,7 @@
 # of appearance. Changing the order has an impact on the overall integration
 # process, which may cause wedges in the gate later.
 pbr>=0.11,<2.0
-subprocess32>=3.2.6
-futures>=3.0.2
+subprocess32>=3.2.6,<3.2.9
+futures>=3.0.2,<3.0.5
+pyyaml>=3.11,<3.15
+netaddr>=0.7.18,<0.8
