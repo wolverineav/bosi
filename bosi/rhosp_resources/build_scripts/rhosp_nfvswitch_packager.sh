@@ -55,6 +55,8 @@ mv ./nfvswitch_qemu/* ./tarball
 mv ./bosi/rhosp_resources/nfvswitch/* ./tarball
 # Sample yaml files
 mv ./bosi/rhosp_resources/yamls ./tarball
+# bosi offline installation package
+mv ./bosi/bosi_offline_packages_*tar.gz ./tarball
 # bsnstacklib
 mv ./bsnstacklib/*.noarch.rpm ./tarball
 # horizon-bsn
