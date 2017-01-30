@@ -17,6 +17,12 @@ git tag -f -s $CURR_VERSION -m $CURR_VERSION -u "Big Switch Networks"
 
 python setup.py sdist
 
+# get packages for offline installation
+mkdir -p bosi_offline/dependencies
+pip install --download bosi_offline/dependencies --requirement requirements.txt
+cp dist/* bosi_offline/
+tar -zcvf bosi_offline_packages_$CURR_VERSION.tar.gz bosi_offline
+
 # force success. but always check if pip install fails
 twine upload dist/* -r pypi -s -i "Big Switch Networks" || true
 # delay of 5 seconds
@@ -43,6 +49,7 @@ rm -rf "$OUTDIR" && mkdir -p "$OUTDIR"
 mv /bosi/dist/*.tar.gz "$OUTDIR"
 mv /bosi/dist/*.tar.gz.asc "$OUTDIR"
 cp -r /bosi/bosi/rhosp_resources "$OUTDIR"
+cp bosi_offline_packages_$CURR_VERSION.tar.gz "$OUTDIR"
 
 git log > "$OUTDIR/gitlog.txt"
 touch "$OUTDIR/build-$CURR_VERSION"
