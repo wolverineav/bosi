@@ -49,12 +49,12 @@ mkdir bosi
 rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/bosi/$BcfBranch/latest/* ./bosi
 
 # grunt work aka packaging
-mkdir tarball
+mkdir -p tarball/bosi
 mv ./bosi/rhosp_resources/ivs/customize.sh ./tarball
 mv ./bosi/rhosp_resources/ivs/README ./tarball
 mv ./bosi/rhosp_resources/ivs/startup.sh ./tarball
 mv ./bosi/rhosp_resources/yamls ./tarball
-mv ./bosi/bosi_offline_packages_*tar.gz ./tarball
+mv ./bosi/bosi_offline_packages_*tar.gz ./tarball/bosi
 mv ./bsnstacklib/*.noarch.rpm ./tarball
 mv ./horizon-bsn/*.noarch.rpm ./tarball
 mv ./ivs/*.rpm ./tarball
