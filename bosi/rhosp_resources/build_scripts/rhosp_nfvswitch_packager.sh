@@ -27,7 +27,7 @@ sudo rm -rf *
 
 # get nfvswitch packages
 mkdir nfvswitch
-rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/nfvswitch/centos7-x86_64/latest/* ./nfvswitch
+rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/nfvswitch/centos7-x86_64/$IvsBranch/latest/* ./nfvswitch
 
 # get nfvswitch-qemu packages
 mkdir nfvswitch_qemu
