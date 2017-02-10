@@ -28,11 +28,13 @@ OS_BCF_MAPPING_LOWER = {
     'liberty': {
         '3.6': '20153.36',
         '3.7': '20153.36',
-        '4.0': '20153.36'
+        '4.0': '20153.36',
+        '4.1': '20153.36'
     },
     'mitaka': {
         '3.7': '8.37',
-        '4.0': '8.37'
+        '4.0': '8.37',
+        '4.1': '8.37'
     }
 }
 
@@ -43,14 +45,16 @@ OS_BCF_MAPPING_UPPER = {
     'liberty': {
         '3.6': '20153.37',
         '3.7': '20153.38',
-        '4.0': '20153.41'
+        '4.0': '20153.41',
+        '4.1': '20153.41'
     },
     'mitaka': {
         # NOTE : we released a 8.40 by mistake and cannot downgrade on pypi,
         # hence upper is 8.41 instead of 8.38. we'll have to keep track
         # of incompatibilities to make sure it doesn't break anything
         '3.7': '8.41',
-        '4.0': '8.41'
+        '4.0': '8.41',
+        '4.1': '8.41'
     }
 }
 
