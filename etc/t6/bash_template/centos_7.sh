@@ -72,14 +72,14 @@ compute() {
         fi
 
         if [[ $pass == true ]]; then
-            rpm -ivh --force %(dst_dir)s/%(ivs_pkg)s
+            rpm -ivhU --force %(dst_dir)s/%(ivs_pkg)s
             if [[ -f %(dst_dir)s/%(ivs_debug_pkg)s ]]; then
-                rpm -ivh --force %(dst_dir)s/%(ivs_debug_pkg)s
+                rpm -ivhU --force %(dst_dir)s/%(ivs_debug_pkg)s
             fi
         elif [[ $skip_ivs_version_check == true ]]; then
-            rpm -ivh --force %(dst_dir)s/%(ivs_pkg)s
+            rpm -ivhU --force %(dst_dir)s/%(ivs_pkg)s
             if [[ -f %(dst_dir)s/%(ivs_debug_pkg)s ]]; then
-                rpm -ivh --force %(dst_dir)s/%(ivs_debug_pkg)s
+                rpm -ivhU --force %(dst_dir)s/%(ivs_debug_pkg)s
             fi
         else
             echo "ivs upgrade fails version validation"
