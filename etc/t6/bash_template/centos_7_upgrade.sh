@@ -41,7 +41,7 @@ compute() {
             systemctl restart neutron-bsn-agent
         fi
         if [[ $pkg == *"ivs"* ]]; then
-            rpm -ivh --force $pkg
+            rpm -ivhU --force $pkg
             systemctl enable  ivs
             systemctl restart ivs
         fi
