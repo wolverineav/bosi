@@ -20,7 +20,7 @@ controller() {
     PKGS=%(dst_dir)s/upgrade/*
     for pkg in $PKGS
     do
-        if [[ $pkg == *"bsnstacklib"* ]]; then
+        if [[ $pkg == *"networking-bigswitch"* ]]; then
             install_pkg $pkg
             neutron-db-manage upgrade heads
             service neutron-server restart
@@ -38,7 +38,7 @@ compute() {
     PKGS=%(dst_dir)s/upgrade/*
     for pkg in $PKGS
     do
-        if [[ $pkg == *"bsnstacklib"* ]]; then
+        if [[ $pkg == *"networking-bigswitch"* ]]; then
             install_pkg $pkg
             service neutron-bsn-lldp restart
         fi
@@ -62,6 +62,9 @@ if [[ "$(id -u)" != "0" ]]; then
    echo -e "Please run as root"
    exit 1
 fi
+
+# uninstall bsnstacklib
+pip uninstall -y bsnstacklib || true
 
 if [[ $is_controller == true ]]; then
     controller

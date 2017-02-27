@@ -224,7 +224,7 @@ if %(deploy_dhcp_agent)s {
         section           => 'DEFAULT',
         key_val_separator => '=',
         setting           => 'dhcp_driver',
-        value             => 'bsnstacklib.plugins.bigswitch.dhcp_driver.DnsmasqWithMetaData',
+        value             => 'networking_bigswitch.plugins.bigswitch.dhcp_driver.DnsmasqWithMetaData',
     }
     ini_setting { "force to use dhcp for metadata":
         ensure            => present,
