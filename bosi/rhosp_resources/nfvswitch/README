@@ -8,13 +8,13 @@ directory is verified to work with BCF 4.0 and RHOSP9.0.
 Please refer to BCF deployment guide for the steps to
 patch RHOSP overcloud images.
 
-python-networking-bigswitch-${bsnstacklib_version}-1.el7.centos.noarch.rpm
+python-networking-bigswitch-${networking_bigswitch_version}-1.el7.centos.noarch.rpm
 contains the Big Switch ml2 plugin and l3 service plugin
 
-openstack-neutron-bigswitch-lldp-${bsnstacklib_version}-1.el7.centos.noarch.rpm
+openstack-neutron-bigswitch-lldp-${networking_bigswitch_version}-1.el7.centos.noarch.rpm
 contains the Big Switch lldp service
 
-openstack-neutron-bigswitch-agent-${bsnstacklib_version}-1.el7.centos.noarch.rpm
+openstack-neutron-bigswitch-agent-${networking_bigswitch_version}-1.el7.centos.noarch.rpm
 contains the Big Switch virtual switch agent
 
 python-horizon-bsn-${horizon_bsn_version}-1.el7.centos.noarch.rpm
