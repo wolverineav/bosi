@@ -31,11 +31,11 @@ sudo rm -rf *
 mkdir ivs
 rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/xenon-bsn/centos7-x86_64/$IvsBranch/latest/* ./ivs
 
-# get networking_bigswitch packages
-mkdir networking_bigswitch
-rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/networking_bigswitch/centos7-x86_64/$OpenStackBranch/latest/* ./networking_bigswitch
+# get networking-bigswitch packages
+mkdir networking-bigswitch
+rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/networking-bigswitch/centos7-x86_64/$OpenStackBranch/latest/* ./networking-bigswitch
 
-# since we have special branching for networking_bigswitch, we need to sanitize it for horizon-bsn package
+# since we have special branching for networking-bigswitch, we need to sanitize it for horizon-bsn package
 HorizonBsnBranch="$OpenStackBranch"
 if [[ "$OpenStackBranch" == *"liberty"* ]]; then
     HorizonBsnBranch="origin/stable/liberty"
@@ -55,7 +55,7 @@ mv ./bosi/rhosp_resources/ivs/README ./tarball
 mv ./bosi/rhosp_resources/ivs/startup.sh ./tarball
 mv ./bosi/rhosp_resources/yamls ./tarball
 mv ./bosi/bosi_offline_packages_*tar.gz ./tarball/bosi
-mv ./networking_bigswitch/*.noarch.rpm ./tarball
+mv ./networking-bigswitch/*.noarch.rpm ./tarball
 mv ./horizon-bsn/*.noarch.rpm ./tarball
 mv ./ivs/*.rpm ./tarball
 

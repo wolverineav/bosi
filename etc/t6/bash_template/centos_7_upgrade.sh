@@ -2,7 +2,7 @@
 
 is_controller=%(is_controller)s
 
-install_pkg {
+install_pkg() {
     pkg=$1
     cd %(dst_dir)s/upgrade
     tar -xzf $pkg
@@ -58,7 +58,7 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 # uninstall bsnstacklib
-pip uninstall bsnstacklib || true
+pip uninstall -y bsnstacklib || true
 
 if [[ $is_controller == true ]]; then
     controller

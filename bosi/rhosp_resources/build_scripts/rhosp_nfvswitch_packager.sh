@@ -35,9 +35,9 @@ rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/xenon-bsn/
 mkdir nfvswitch
 rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/nfvswitch/centos7-x86_64/$IvsBranch/latest/* ./nfvswitch
 
-# get networking_bigswitch packages
-mkdir networking_bigswitch
-rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/networking_bigswitch/centos7-x86_64/$OpenStackBranch/latest/* ./networking_bigswitch
+# get networking-bigswitch packages
+mkdir networking-bigswitch
+rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/networking-bigswitch/centos7-x86_64/$OpenStackBranch/latest/* ./networking-bigswitch
 
 # get horizon-bsn packages
 mkdir horizon-bsn
@@ -55,8 +55,8 @@ mv ./bosi/rhosp_resources/nfvswitch/* ./tarball
 mv ./bosi/rhosp_resources/yamls ./tarball
 # bosi offline installation package
 mv ./bosi/bosi_offline_packages_*tar.gz ./tarball
-# networking_bigswitch
-mv ./networking_bigswitch/*.noarch.rpm ./tarball
+# networking-bigswitch
+mv ./networking-bigswitch/*.noarch.rpm ./tarball
 # horizon-bsn
 mv ./horizon-bsn/*.noarch.rpm ./tarball
 # nfvswitch rpms
