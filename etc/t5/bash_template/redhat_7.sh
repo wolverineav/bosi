@@ -156,7 +156,8 @@ sudo puppet module install --force puppetlabs-stdlib
 
 # install bsnstacklib, now known as networking-bigswitch
 if [[ $install_bsnstacklib == true ]]; then
-    pip uninstall -y bsnstacklib
+    pip uninstall -y bsnstacklib || true
+    pip uninstall -y networking-bigswitch || true
     sudo pip install --upgrade "networking-bigswitch>%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
 fi
 sudo systemctl stop neutron-bsn-agent

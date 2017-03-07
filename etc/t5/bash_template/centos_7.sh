@@ -144,7 +144,8 @@ puppet module install --force puppetlabs-stdlib
 # install bsnstacklib, now known as networking-bigswitch
 if [[ $install_bsnstacklib == true ]]; then
     sleep 2
-    pip uninstall -y bsnstacklib
+    pip uninstall -y bsnstacklib || true
+    pip uninstall -y networking-bigswitch || true
     sleep 2
     if [[ $pip_proxy == false ]]; then
         pip install --upgrade "networking-bigswitch>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
