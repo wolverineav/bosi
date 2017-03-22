@@ -1549,16 +1549,27 @@ class Helper(object):
             # put all controllers to rabbit hosts
             neutron_conf = open(
                 "%s/neutron.conf" % controller_node.setup_node_dir, 'r')
-            for line in neutron_conf:
-                if line.startswith("rabbit_hosts"):
-                    hosts_str = line.split("=")[1].strip()
-                    hosts = hosts_str.split(',')
-                    for host in hosts:
-                        if "127.0" in host:
-                            rabbit_port = host.split(':')[1]
-                            continue
-                        rabbit_hosts.add(host.strip())
-                    break
+            if len(controller_nodes) == 1:
+                for line in neutron_conf:
+                    if line.startswith("rabbit_host"):
+                        host_str = line.split("=")[1].strip()
+                        rabbit_hosts.add(host_str)
+                        continue
+                    elif line.startswith("rabbit_port"):
+                        rabbit_port = line.split("=")[1].strip()
+                        continue
+            else:
+                for line in neutron_conf:
+                    if line.startswith("rabbit_hosts"):
+                        hosts_str = line.split("=")[1].strip()
+                        hosts = hosts_str.split(',')
+                        for host in hosts:
+                            if "127.0" in host:
+                                rabbit_port = host.split(':')[1]
+                                continue
+                            rabbit_hosts.add(host.strip())
+                        break
+
 
         if len(controller_nodes):
             controller_node = controller_nodes[0]
