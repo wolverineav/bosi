@@ -35,9 +35,9 @@ rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/xenon-bsn/
 mkdir nfvswitch
 rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/nfvswitch/centos7-x86_64/$IvsBranch/latest/* ./nfvswitch
 
-# get bsnstacklib packages
-mkdir bsnstacklib
-rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/bsnstacklib/centos7-x86_64/$OpenStackBranch/latest/* ./bsnstacklib
+# get networking-bigswitch packages
+mkdir networking-bigswitch
+rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/networking-bigswitch/centos7-x86_64/$OpenStackBranch/latest/* ./networking-bigswitch
 
 # get horizon-bsn packages
 mkdir horizon-bsn
@@ -55,8 +55,8 @@ mv ./bosi/rhosp_resources/nfvswitch/* ./tarball
 mv ./bosi/rhosp_resources/yamls ./tarball
 # bosi offline installation package
 mv ./bosi/bosi_offline_packages_*tar.gz ./tarball
-# bsnstacklib
-mv ./bsnstacklib/*.noarch.rpm ./tarball
+# networking-bigswitch
+mv ./networking-bigswitch/*.noarch.rpm ./tarball
 # horizon-bsn
 mv ./horizon-bsn/*.noarch.rpm ./tarball
 # nfvswitch rpms
@@ -88,7 +88,7 @@ then
     NFVSWITCH_VERSION=$V
 fi
 
-# bsnstacklib and horizon-bsn is <openstack-version>.<bcf-version>.<bug-fix-id>
+# networking-bigswitch and horizon-bsn is <openstack-version>.<bcf-version>.<bug-fix-id>
 # however, to maintain compatibility with lower version of bcf releases,
 # $BcfBranch specified for build and latest package's <bcf-version> may not be same.
 # e.g. liberty, 3.7 will still use liberty.36.x since liberty was first released with
@@ -96,7 +96,7 @@ fi
 
 BSNLIB_PKG="`ls ./tarball/python-networking-bigswitch*`"
 get_version $BSNLIB_PKG
-BSNSTACKLIB_VERSION=$V
+NETWORKING_BIGSWITCH_VERSION=$V
 
 HORIZON_PKG="`ls ./tarball/python-horizon-bsn*`"
 get_version $HORIZON_PKG
@@ -104,7 +104,7 @@ HORIZON_BSN_VERSION=$V
 
 echo "ivs version is" $IVS_VERSION
 echo "nfvswitch version is" $NFVSWITCH_VERSION
-echo "bsnstacklib version is" $BSNSTACKLIB_VERSION
+echo "networking-bigswitch version is" $NETWORKING_BIGSWITCH_VERSION
 echo "horizon-bsn version is" $HORIZON_BSN_VERSION
 
 # IVS_VERSION_REVISION includes ivs version with its revision number, default = -1. redhat naming convention
@@ -126,9 +126,9 @@ then
     NFVSWITCH_VERSION_REVISION="$IVS_VERSION"
 fi
 
-sed -i -e "s/\${bsnstacklib_version}/$BSNSTACKLIB_VERSION/" -e "s/\${horizon_bsn_version}/$HORIZON_BSN_VERSION/" -e "s/\${nfvswitch_version}/$NFVSWITCH_VERSION_REVISION/" -e "s/\${ivs_version}/$IVS_VERSION_REVISION/" ./tarball/customize.sh
-sed -i -e "s/\${bsnstacklib_version}/$BSNSTACKLIB_VERSION/" -e "s/\${horizon_bsn_version}/$HORIZON_BSN_VERSION/" -e "s/\${nfvswitch_version}/$NFVSWITCH_VERSION_REVISION/" -e "s/\${ivs_version}/$IVS_VERSION_REVISION/" ./tarball/startup.sh
-sed -i -e "s/\${bsnstacklib_version}/$BSNSTACKLIB_VERSION/" -e "s/\${horizon_bsn_version}/$HORIZON_BSN_VERSION/" -e "s/\${nfvswitch_version}/$NFVSWITCH_VERSION_REVISION/" -e "s/\${ivs_version}/$IVS_VERSION_REVISION/" ./tarball/README
+sed -i -e "s/\${networking_bigswitch_version}/$NETWORKING_BIGSWITCH_VERSION/" -e "s/\${horizon_bsn_version}/$HORIZON_BSN_VERSION/" -e "s/\${nfvswitch_version}/$NFVSWITCH_VERSION_REVISION/" -e "s/\${ivs_version}/$IVS_VERSION_REVISION/" ./tarball/customize.sh
+sed -i -e "s/\${networking_bigswitch_version}/$NETWORKING_BIGSWITCH_VERSION/" -e "s/\${horizon_bsn_version}/$HORIZON_BSN_VERSION/" -e "s/\${nfvswitch_version}/$NFVSWITCH_VERSION_REVISION/" -e "s/\${ivs_version}/$IVS_VERSION_REVISION/" ./tarball/startup.sh
+sed -i -e "s/\${networking_bigswitch_version}/$NETWORKING_BIGSWITCH_VERSION/" -e "s/\${horizon_bsn_version}/$HORIZON_BSN_VERSION/" -e "s/\${nfvswitch_version}/$NFVSWITCH_VERSION_REVISION/" -e "s/\${ivs_version}/$IVS_VERSION_REVISION/" ./tarball/README
 
 DATE=`date +%Y-%m-%d`
 TAR_NAME="BCF-RHOSP-$RHOSPVersion-plugins-nfvswitch-$NFVSWITCH_VERSION.$Revision-$DATE"
