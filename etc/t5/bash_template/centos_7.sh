@@ -141,17 +141,16 @@ pip install --upgrade funcsigs
 puppet module install --force puppetlabs-inifile
 puppet module install --force puppetlabs-stdlib
 
-# install bsnstacklib, now known as networking-bigswitch
+# install bsnstacklib
 if [[ $install_bsnstacklib == true ]]; then
     sleep 2
-    pip uninstall -y bsnstacklib || true
-    pip uninstall -y networking-bigswitch || true
+    pip uninstall -y bsnstacklib
     sleep 2
     if [[ $pip_proxy == false ]]; then
-        pip install --upgrade "networking-bigswitch>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
+        pip install --upgrade "bsnstacklib>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
         pip install --upgrade "horizon-bsn>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
     else
-        pip --proxy $pip_proxy  install --upgrade "networking-bigswitch>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
+        pip --proxy $pip_proxy  install --upgrade "bsnstacklib>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
         pip --proxy $pip_proxy  install --upgrade "horizon-bsn>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
     fi
 fi
