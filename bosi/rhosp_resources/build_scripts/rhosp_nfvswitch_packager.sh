@@ -130,7 +130,7 @@ sed -i -e "s/\${bsnstacklib_version}/$BSNSTACKLIB_VERSION/" -e "s/\${horizon_bsn
 sed -i -e "s/\${bsnstacklib_version}/$BSNSTACKLIB_VERSION/" -e "s/\${horizon_bsn_version}/$HORIZON_BSN_VERSION/" -e "s/\${nfvswitch_version}/$NFVSWITCH_VERSION_REVISION/" -e "s/\${ivs_version}/$IVS_VERSION_REVISION/" ./tarball/startup.sh
 sed -i -e "s/\${bsnstacklib_version}/$BSNSTACKLIB_VERSION/" -e "s/\${horizon_bsn_version}/$HORIZON_BSN_VERSION/" -e "s/\${nfvswitch_version}/$NFVSWITCH_VERSION_REVISION/" -e "s/\${ivs_version}/$IVS_VERSION_REVISION/" ./tarball/README
 
-DATE=`date +%Y-%m-%d-%H_%M_%S`
+DATE=`date +%Y-%m-%d-%H-%M-%S`
 TAR_NAME="BCF-RHOSP-$RHOSPVersion-plugins-nfvswitch-$NFVSWITCH_VERSION.$Revision-$DATE"
 mv tarball $TAR_NAME
 tar -zcvf $TAR_NAME.tar.gz $TAR_NAME
