@@ -1,0 +1,14 @@
+This directory contains artifacts required for building tarballs
+for RHOSP. Contents of this directory are not used by BOSI in any
+way.
+
+Placeholder for RHOSP resources.
+
+Resources are grouped based on Openstack release branches.
+Typically all branch directories are symlinks to 'master' directory.
+Unless there is change for a particular branch, in which case it will
+be an actual directory containing the script/yaml files.
+
+When making a fix in master that should be propogated to all the other
+releases, please check branch specific directory to make sure it is
+updated.
