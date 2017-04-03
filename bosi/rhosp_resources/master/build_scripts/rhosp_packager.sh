@@ -50,10 +50,10 @@ rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/bosi/$BcfB
 
 # grunt work aka packaging
 mkdir -p tarball/bosi
-mv ./bosi/rhosp_resources/ivs/customize.sh ./tarball
-mv ./bosi/rhosp_resources/ivs/README ./tarball
-mv ./bosi/rhosp_resources/ivs/startup.sh ./tarball
-mv ./bosi/rhosp_resources/yamls ./tarball
+mv ./bosi/rhosp_resources/$HorizonBsnBranch/ivs/customize.sh ./tarball
+mv ./bosi/rhosp_resources/$HorizonBsnBranch/ivs/README ./tarball
+mv ./bosi/rhosp_resources/$HorizonBsnBranch/ivs/startup.sh ./tarball
+mv ./bosi/rhosp_resources/$HorizonBsnBranch/yamls ./tarball
 mv ./bosi/bosi_offline_packages_*tar.gz ./tarball/bosi
 mv ./bsnstacklib/*.noarch.rpm ./tarball
 mv ./horizon-bsn/*.noarch.rpm ./tarball
