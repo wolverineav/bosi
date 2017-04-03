@@ -52,9 +52,9 @@ mv ./nfvswitch/nfvswitch-*.rpm ./tarball
 # nfvswitch_qemu rpms
 mv ./nfvswitch_qemu/* ./tarball
 # BOSI contains these files namely: customize.sh  README  startup.sh
-mv ./bosi/rhosp_resources/nfvswitch/* ./tarball
+mv ./bosi/rhosp_resources/$HorizonBsnBranch/nfvswitch/* ./tarball
 # Sample yaml files
-mv ./bosi/rhosp_resources/yamls ./tarball
+mv ./bosi/rhosp_resources/$HorizonBsnBranch/yamls ./tarball
 # bosi offline installation package
 mv ./bosi/bosi_offline_packages_*tar.gz ./tarball
 # bsnstacklib
