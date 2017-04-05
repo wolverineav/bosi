@@ -7,9 +7,9 @@ yum remove -y openstack-neutron-bigswitch-agent
 yum remove -y openstack-neutron-bigswitch-lldp
 yum remove -y python-networking-bigswitch
 
-rpm -ivh --force /root/python-networking-bigswitch-${bsnstacklib_version}-1.el7.centos.noarch.rpm
-rpm -ivh --force /root/openstack-neutron-bigswitch-agent-${bsnstacklib_version}-1.el7.centos.noarch.rpm
-rpm -ivh --force /root/openstack-neutron-bigswitch-lldp-${bsnstacklib_version}-1.el7.centos.noarch.rpm
+rpm -ivh --force /root/python-networking-bigswitch-${networking_bigswitch_version}-1.el7.centos.noarch.rpm
+rpm -ivh --force /root/openstack-neutron-bigswitch-agent-${networking_bigswitch_version}-1.el7.centos.noarch.rpm
+rpm -ivh --force /root/openstack-neutron-bigswitch-lldp-${networking_bigswitch_version}-1.el7.centos.noarch.rpm
 rpm -ivh --force /root/python-horizon-bsn-${horizon_bsn_version}-1.el7.centos.noarch.rpm
 
 systemctl enable neutron-bsn-lldp.service
