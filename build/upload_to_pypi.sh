@@ -40,7 +40,7 @@ sudo -H pip uninstall -y bosi
 # $GIT_BRANCH is set by jenkins
 # possible values are origin/master, origin/bcf-3.7.0, origin/bcf-4.0.0 and so on..
 # convert to canonical bcf_version format as master, 3.7.0, 4.0.0 and so on..
-BCF_BRANCH=`echo "$GIT_BRANCH" | rev | cut -d'/' -f 1 | cut -d'-' -f 1 | rev`
+BCF_BRANCH=`echo "$GIT_BRANCH" | rev | cut -d'/' -f 1 | cut -d'-' -f 1,2 | rev`
 
 
 # Prepare packages for rsync
