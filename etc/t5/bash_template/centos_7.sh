@@ -121,6 +121,15 @@ compute() {
     fi
 }
 
+install_pkg() {
+    pkg=$1
+    cd %(dst_dir)s/upgrade
+    tar -xzf $pkg
+    dir=${pkg::-7}
+    cd $dir
+    python setup.py build
+    python setup.py install
+}
 
 set +e
 
@@ -154,7 +163,7 @@ if [[ $install_bsnstacklib == true ]]; then
         PKGS=$offline_dir/*
         for pkg in $PKGS
         do
-            pip install --upgrade $pkg
+            install_pkg $pkg
         done
     # else online
     elif [[ $pip_proxy == false ]]; then
