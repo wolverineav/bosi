@@ -368,6 +368,46 @@ class Helper(object):
         return Helper.generate_upgrade_scripts(node, const.UBUNTU)
 
     @staticmethod
+    def generate_sriov_scripts(node, bash_template):
+        with open((r'''%(setup_node_dir)s/%(deploy_mode)s/'''
+                   '''%(bash_template_dir)s/%(bash_template)s_'''
+                   '''%(os_version)s_%(role)s.sh''' %
+                   {'setup_node_dir': node.setup_node_dir,
+                    'deploy_mode': node.deploy_mode,
+                    'bash_template_dir': const.BASH_TEMPLATE_DIR,
+                    'bash_template': bash_template,
+                    'os_version': node.os_version,
+                    'role': node.role}),
+                  "r") as bash_template_file:
+            bash_template_content = bash_template_file.read()
+
+            active_active = False if len(node.sriov_physnets) == 2 else True
+            bash = (
+                bash_template_content %
+                {'fqdn': node.fqdn,
+                 'active_active': str(active_active).lower(),
+                 'phy1_name': node.get_sriov_phy1_name(),
+                 'phy1_nics': node.get_sriov_phy1_nics(),
+                 'phy2_name': node.get_sriov_phy2_name(),
+                 'phy2_nics': node.get_sriov_phy2_nics()
+                 })
+        bash_script_path = (
+            r'''%(setup_node_dir)s/%(generated_script_dir)s'''
+            '''/%(hostname)s_sriov.sh''' %
+            {'setup_node_dir': node.setup_node_dir,
+             'generated_script_dir': const.GENERATED_SCRIPT_DIR,
+             'hostname': node.hostname})
+        with open(bash_script_path, "w") as bash_file:
+            bash_file.write(bash)
+        node.set_bash_script_path(bash_script_path)
+
+        return
+
+    @staticmethod
+    def generate_sriov_scripts_for_redhat(node):
+        return Helper.generate_sriov_scripts(node, const.REDHAT)
+
+    @staticmethod
     def generate_scripts_for_redhat(node):
         # generate bash script
         with open((r'''%(setup_node_dir)s/%(deploy_mode)s/'''
@@ -763,6 +803,10 @@ class Helper(object):
             if not Helper.is_connected(node):
                 continue
             if node.skip:
+                safe_print("Skipping node %(hostname)s because "
+                           "%(error_msg)s.\n" %
+                           {'hostname': node.hostname,
+                            'error_msg': node.error})
                 continue
 
             node_yaml_config['old_ivs_version'] = None
@@ -842,9 +886,14 @@ class Helper(object):
         else:
             return None
         node_config['hostname'] = hostname
-        node_config['role'] = role
+        # In case of RHOSP, SRIOV nodes need to be explicitly specified
+        node_config['role'] = (const.ROLE_SRIOV
+                               if node_config['role'] is const.ROLE_SRIOV
+                               else role)
         node = Node(node_config, env)
         if node.skip:
+            safe_print("Skipping node %(hostname)s because %(error_msg)s.\n" %
+                       {'hostname': hostname, 'error_msg': node.error})
             return None
 
         # get uname
@@ -1062,6 +1111,8 @@ class Helper(object):
 
         node = Node(node_config, env)
         if node.skip:
+            safe_print("Skipping node %(hostname)s because %(error_msg)s.\n" %
+                       {'hostname': hostname, 'error_msg': node.error})
             return None
         # copy dpid.py to remote node
         safe_print("Copy dpid.py to %(hostname)s\n" %
@@ -1616,6 +1667,16 @@ class Helper(object):
                     {'src_dir': node.upgrade_dir,
                      'pkg': pkg}),
                      dst_dir, pkg)
+            return
+
+        if node.role is const.ROLE_SRIOV:
+            # copy bash script to node
+            safe_print("Copy bash script to %(hostname)s\n" %
+                      {'hostname': node.fqdn})
+            Helper.copy_file_to_remote(
+                node, node.bash_script_path, node.dst_dir,
+                "%(hostname)s_sriov.sh" % {'hostname': node.hostname})
+
             return
 
         if node.offline_dir:
