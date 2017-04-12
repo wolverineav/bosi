@@ -13,6 +13,7 @@ fuel_cluster_id=%(fuel_cluster_id)s
 openstack_release=%(openstack_release)s
 skip_ivs_version_check=%(skip_ivs_version_check)s
 pip_proxy=%(pip_proxy)s
+offline_dir=%(dst_dir)s/offline
 
 controller() {
     # copy send_lldp to /bin
@@ -216,7 +217,7 @@ mongo() {
 
 install_pkg() {
     pkg=$1
-    cd %(dst_dir)s/upgrade
+    cd $offline_dir
     tar -xzf $pkg
     dir=${pkg::-7}
     cd $dir
@@ -232,10 +233,13 @@ if [[ "$(id -u)" != "0" ]]; then
    exit 1
 fi
 
-# prepare dependencies
-easy_install pip
-puppet module install --force puppetlabs-inifile
-puppet module install --force puppetlabs-stdlib
+# in case of offline installation, these dependencies are expected to be pre-installed
+if [[ ! -d $offline_dir ]]; then
+    # prepare dependencies
+    easy_install pip
+    puppet module install --force puppetlabs-inifile
+    puppet module install --force puppetlabs-stdlib
+fi
 
 # install bsnstacklib, now known as networking-bigswitch
 if [[ $install_bsnstacklib == true ]]; then
@@ -244,7 +248,6 @@ if [[ $install_bsnstacklib == true ]]; then
     pip uninstall -y networking-bigswitch || true
     sleep 2
 
-    offline_dir=%(dst_dir)s/offline
     if [[ -d $offline_dir ]]; then
         # install from offline package dir if available
         PKGS=$offline_dir/*
