@@ -22,7 +22,7 @@ def has_min_req_packages(dir_path):
 
     :rtype boolean
     """
-    req_packages = ['bsnstacklib', 'horizon-bsn']
+    req_packages = ['networking-bigswitch', 'horizon-bsn']
     all_packages = []
     for file in listdir(dir_path):
         if isfile(join(dir_path, file)):
@@ -1331,8 +1331,9 @@ class Helper(object):
         # available
         if env.offline_dir:
             if not has_min_req_packages(env.offline_dir):
-                safe_print("Either bsnstacklib or horizon-bsn is missing in "
-                           "the offline_dir. Please check again and retry.")
+                safe_print("Either networking-bigswitch or horizon-bsn is "
+                           "missing in the offline_dir. Please check again "
+                           "and retry.")
                 exit(1)
 
         # wget ivs packages
