@@ -10,6 +10,7 @@ fuel_cluster_id=%(fuel_cluster_id)s
 openstack_release=%(openstack_release)s
 skip_ivs_version_check=%(skip_ivs_version_check)s
 pip_proxy=%(pip_proxy)s
+offline_dir=%(dst_dir)s/offline
 
 
 controller() {
@@ -166,6 +167,15 @@ compute() {
     rm -rf /usr/share/nova/rootwrap/rootwrap
 }
 
+install_pkg() {
+    pkg=$1
+    cd $offline_dir
+    tar -xzf $pkg
+    dir=${pkg::-7}
+    cd $dir
+    python setup.py build
+    python setup.py install
+}
 
 set +e
 
@@ -175,18 +185,21 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
-# prepare dependencies
-yum install -y wget
+# in case of offline installation, these dependencies are expected to be pre-installed
+if [[ ! -d $offline_dir ]]; then
+    # prepare dependencies
+    yum install -y wget
 
-wget -r --no-parent --no-directories --timestamping --accept 'epel-release-7-*.rpm' 'http://dl.fedoraproject.org/pub/epel/7/x86_64/e/'
-rpm -iUvh epel-release-7-*.rpm
-rpm -ivh https://yum.puppetlabs.com/el/7/products/x86_64/puppetlabs-release-7-10.noarch.rpm
-yum groupinstall -y 'Development Tools'
-yum install -y python-devel puppet python-pip wget libffi-devel openssl-devel
-easy_install pip
-pip install --upgrade funcsigs
-puppet module install --force puppetlabs-inifile
-puppet module install --force puppetlabs-stdlib
+    wget -r --no-parent --no-directories --timestamping --accept 'epel-release-7-*.rpm' 'http://dl.fedoraproject.org/pub/epel/7/x86_64/e/'
+    rpm -iUvh epel-release-7-*.rpm
+    rpm -ivh https://yum.puppetlabs.com/el/7/products/x86_64/puppetlabs-release-7-10.noarch.rpm
+    yum groupinstall -y 'Development Tools'
+    yum install -y python-devel puppet python-pip wget libffi-devel openssl-devel
+    easy_install pip
+    pip install --upgrade funcsigs
+    puppet module install --force puppetlabs-inifile
+    puppet module install --force puppetlabs-stdlib
+fi
 
 # install bsnstacklib, now known as networking-bigswitch
 if [[ $install_bsnstacklib == true ]]; then
@@ -195,13 +208,12 @@ if [[ $install_bsnstacklib == true ]]; then
     pip uninstall -y networking-bigswitch || true
     sleep 2
 
-    offline_dir=%(dst_dir)s/offline
     if [[ -d $offline_dir ]]; then
         # install from offline package dir if available
         PKGS=$offline_dir/*
         for pkg in $PKGS
         do
-            pip install --upgrade $pkg
+            install_pkg $pkg
         done
     # else online
     elif [[ $pip_proxy == false ]]; then
