@@ -42,7 +42,7 @@ def worker_upgrade_or_sriov_node(q):
                    {'fqdn': node.fqdn})
 
         start_time = datetime.datetime.now()
-        if node.role is const.ROLE_SRIOV:
+        if node.role == const.ROLE_SRIOV:
             Helper.run_command_on_remote(node,
                 (r'''sudo bash %(dst_dir)s/%(hostname)s_sriov.sh''' %
                 {'dst_dir': node.dst_dir,
@@ -231,14 +231,17 @@ def setup_sriov(node_dic):
             safe_print("skip node %(fqdn)s due to mismatched tag\n" %
                       {'fqdn': node.fqdn})
             continue
-        if node.role is not const.ROLE_SRIOV:
+        if node.role != const.ROLE_SRIOV:
             safe_print("Skipping node %(hostname)s because deployment mode is "
-                       "SRIOV and role set for node is not SRIOV." %
-                       {'hostname': hostname})
-        if node.os is not const.REDHAT:
+                       "SRIOV and role set for node is not SRIOV. It is "
+                       "%(role)s\n" %
+                       {'hostname': hostname, 'role': node.role})
+            continue
+        if node.os != const.REDHAT:
             safe_print("Skipping node %(hostname)s because deployment mode is "
-                       "SRIOV and non REDHAT OS is not supported." %
-                       {'hostname': hostname})
+                       "SRIOV and non REDHAT OS is not supported. OS set for "
+                       "node is %(os)s\n" %
+                       {'hostname': hostname, 'os': node.os})
             continue
 
         # all okay, generate scripts for node
@@ -275,7 +278,7 @@ def deploy_bcf(config, mode, fuel_cluster_id, rhosp, tag, cleanup,
     safe_print("Start to prepare setup node\n")
     env = Environment(config, mode, fuel_cluster_id, rhosp, tag, cleanup,
                       skip_ivs_version_check, certificate_dir, upgrade_dir,
-                      offline_dir)
+                      offline_dir, sriov)
     Helper.common_setup_node_preparation(env)
     controller_nodes = []
 

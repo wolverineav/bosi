@@ -371,7 +371,7 @@ class Helper(object):
     def generate_sriov_scripts(node, bash_template):
         with open((r'''%(setup_node_dir)s/%(deploy_mode)s/'''
                    '''%(bash_template_dir)s/%(bash_template)s_'''
-                   '''%(os_version)s_%(role)s.sh''' %
+                   '''%(os_version)s_sriov.sh''' %
                    {'setup_node_dir': node.setup_node_dir,
                     'deploy_mode': node.deploy_mode,
                     'bash_template_dir': const.BASH_TEMPLATE_DIR,
@@ -382,15 +382,14 @@ class Helper(object):
             bash_template_content = bash_template_file.read()
 
             active_active = False if len(node.sriov_physnets) == 2 else True
-            bash = (
-                bash_template_content %
-                {'fqdn': node.fqdn,
-                 'active_active': str(active_active).lower(),
-                 'phy1_name': node.get_sriov_phy1_name(),
-                 'phy1_nics': node.get_sriov_phy1_nics(),
-                 'phy2_name': node.get_sriov_phy2_name(),
-                 'phy2_nics': node.get_sriov_phy2_nics()
-                 })
+            bash = bash_template_content.format(**{
+                'fqdn': node.fqdn,
+                'phy1_name': node.get_sriov_phy1_name(),
+                'phy1_nics': node.get_sriov_phy1_nics(),
+                'phy2_name': node.get_sriov_phy2_name(),
+                'phy2_nics': node.get_sriov_phy2_nics(),
+                'active_active': str(active_active).lower(),
+            })
         bash_script_path = (
             r'''%(setup_node_dir)s/%(generated_script_dir)s'''
             '''/%(hostname)s_sriov.sh''' %
@@ -888,7 +887,7 @@ class Helper(object):
         node_config['hostname'] = hostname
         # In case of RHOSP, SRIOV nodes need to be explicitly specified
         node_config['role'] = (const.ROLE_SRIOV
-                               if node_config['role'] is const.ROLE_SRIOV
+                               if node_config['role'] == const.ROLE_SRIOV
                                else role)
         node = Node(node_config, env)
         if node.skip:
@@ -1374,7 +1373,7 @@ class Helper(object):
                            'generated_script': const.GENERATED_SCRIPT_DIR},
                         shell=True)
 
-        if env.upgrade_dir:
+        if env.upgrade_dir or env.sriov:
             # don't need other preparation for upgrade
             return
 
@@ -1669,7 +1668,7 @@ class Helper(object):
                      dst_dir, pkg)
             return
 
-        if node.role is const.ROLE_SRIOV:
+        if node.role == const.ROLE_SRIOV:
             # copy bash script to node
             safe_print("Copy bash script to %(hostname)s\n" %
                       {'hostname': node.fqdn})

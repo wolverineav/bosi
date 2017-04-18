@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # env variables to be supplied by BOSI
-fqdn=%(fqdn)s
-phy1_name=%(phy1_name)s
-phy1_nics=%(phy1_nics)s
-phy2_name=%(phy2_name)s
-phy2_nics=%(phy2_nics)s
-active_active=%(active_active)s
+fqdn={fqdn}
+phy1_name={phy1_name}
+phy1_nics={phy1_nics}
+phy2_name={phy2_name}
+phy2_nics={phy2_nics}
+active_active={active_active}
 
 # constants for this job
 LOG_FILE="/var/log/bcf_setup.log"
@@ -25,7 +25,7 @@ if [ -f $CONF_FILE ]; then
     echo "send_lldp.conf exists. Stopping running agents."  >> $LOG_FILE
     egrep '^[a-zA-Z0-9_-\ ]+' $CONF_FILE | while read args; do
         echo "stopping send_lldp@" "$args"  >> $LOG_FILE
-        systemctl stop send_lldp@"${args}" | true
+        systemctl stop send_lldp@"${{args}}" | true
     done
     echo "Done stopping previous instances of send_lldp."   >> $LOG_FILE
 else
@@ -40,10 +40,10 @@ echo "
 
 # correctly populate CONF_FILE
 if [[ $active_active == true ]]; then
-    echo " --system-desc 5c:16:c7:00:00:00 --system-name ${fqdn}-${phy1_name} -d -i 10 --network_interface ${phy1_nics}" >> $CONF_FILE
+    echo "--system-desc 5c:16:c7:00:00:00 --system-name ${{fqdn}}-${{phy1_name}} -d -i 10 --network_interface ${{phy1_nics}}" >> $CONF_FILE
 else
-    echo " --system-desc 5c:16:c7:00:00:00 --system-name ${fqdn}-${phy1_name} -d -i 10 --network_interface ${phy1_nics}" >> $CONF_FILE
-    echo " --system-desc 5c:16:c7:00:00:00 --system-name ${fqdn}-${phy2_name} -d -i 10 --network_interface ${phy2_nics}" >> $CONF_FILE
+    echo "--system-desc 5c:16:c7:00:00:00 --system-name ${{fqdn}}-${{phy1_name}} -d -i 10 --network_interface ${{phy1_nics}}" >> $CONF_FILE
+    echo "--system-desc 5c:16:c7:00:00:00 --system-name ${{fqdn}}-${{phy2_name}} -d -i 10 --network_interface ${{phy2_nics}}" >> $CONF_FILE
 fi
 
 if [ ! -f $SERVICE_FILE ]; then
@@ -55,15 +55,15 @@ Description=BSN send_lldp for %I
 After=syslog.target network.target
 
 [Service]
+cmd_args=\`%I | sed 's/\//\-/g'\`
 Type=simple
-ExecStart=/bin/send_lldp %I
+ExecStart=/bin/python /usr/lib/python2.7/site-packages/networking_bigswitch/bsnlldp/send_lldp.py $cmd_args
 Restart=always
 StartLimitInterval=60s
 StartLimitBurst=3
 
 [Install]
 WantedBy=multi-user.target
-
 " > $SERVICE_FILE
 
 # link service file to multi user target
@@ -73,7 +73,7 @@ fi
 
 # start the service as required:
 egrep '^[a-zA-Z0-9_-\ ]+' $CONF_FILE | while read args; do
-    echo "starting send_lldp@ ${args}"  >> $LOG_FILE
-    systemctl start send_lldp@"${args}" | true
+    echo "starting send_lldp@ ${{args}}"  >> $LOG_FILE
+    systemctl start send_lldp@"${{args}}" | true
 done
 echo "Finished updating with SRIOV LLDP scripts."   >> $LOG_FILE
