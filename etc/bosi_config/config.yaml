@@ -44,14 +44,6 @@ deploy_to_specified_nodes_only: false
 # mandatory, used to let bcf ml2 plugin differenciate different openstack clusters
 neutron_id: neutron
 
-# mandatory for rhosp, red hat registration information
-rhosp_automate_register: true
-rhosp_installer_management_interface: eno2
-rhosp_installer_pxe_interface: eno1
-rhosp_undercloud_dns: 8.8.8.8
-rhosp_register_username: bigswitch
-rhosp_register_passwd: bigswitch
-
 # All following configurations can be overrided by openstack installers
 
 # node os user name
