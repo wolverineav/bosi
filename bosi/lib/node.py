@@ -111,7 +111,7 @@ class Node(object):
         self.sriov_physnets = {}
 
         # setup SRIOV physnets
-        if self.role is const.ROLE_SRIOV:
+        if self.role == const.ROLE_SRIOV:
             if not 'physnets' in node_config:
                 self.skip = True
                 self.error = (r'''physnets not specified for SRIOV node'''
