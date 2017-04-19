@@ -9,10 +9,13 @@ active_active={active_active}
 
 # constants for this job
 LOG_FILE="/var/log/bcf_setup.log"
-CONF_DIR="/etc/send_lldp"
-CONF_FILE="$CONF_DIR/send_lldp.conf"
-SERVICE_FILE='/usr/lib/systemd/system/send_lldp@.service'
-SERVICE_FILE_MULTI_USER='/etc/systemd/system/multi-user.target.wants/send_lldp@test.service'
+SERVICE_FILE_1='/usr/lib/systemd/system/send_lldp_1.service'
+SERVICE_FILE_2='/usr/lib/systemd/system/send_lldp_2.service'
+SERVICE_FILE_MULTI_USER_1='/etc/systemd/system/multi-user.target.wants/send_lldp_1.service'
+SERVICE_FILE_MULTI_USER_2='/etc/systemd/system/multi-user.target.wants/send_lldp_2.service'
+
+# new vars with evaluated results
+HOSTNAME=`cat /etc/hostname`
 
 # Make sure only root can run this script
 if [ "$(id -u)" != "0" ]; then
@@ -20,60 +23,63 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
-# if conf file exists, read it and stop services
-if [ -f $CONF_FILE ]; then
-    echo "send_lldp.conf exists. Stopping running agents."  >> $LOG_FILE
-    egrep '^[a-zA-Z0-9_-\ ]+' $CONF_FILE | while read args; do
-        echo "stopping send_lldp@" "$args"  >> $LOG_FILE
-        systemctl stop send_lldp@"${{args}}" | true
-    done
-    echo "Done stopping previous instances of send_lldp."   >> $LOG_FILE
-else
-    mkdir -p $CONF_DIR
-fi
+# if service file exists, stop the service. else, return true
+systemctl stop send_lldp_2 | true
+systemctl stop send_lldp_2 | true
 
-# Overwrite existing file with new content
-echo "
-# lines starting with # are ignored. Sample args as given below:
-# --system-desc 5c:16:c7:00:00:00 --system-name <hostname-physnet_name> -d -i 10 --network_interface <list_of_interfaces>
-" > $CONF_FILE
-
-# correctly populate CONF_FILE
-if [[ $active_active == true ]]; then
-    echo "--system-desc 5c:16:c7:00:00:00 --system-name ${{fqdn}}-${{phy1_name}} -d -i 10 --network_interface ${{phy1_nics}}" >> $CONF_FILE
-else
-    echo "--system-desc 5c:16:c7:00:00:00 --system-name ${{fqdn}}-${{phy1_name}} -d -i 10 --network_interface ${{phy1_nics}}" >> $CONF_FILE
-    echo "--system-desc 5c:16:c7:00:00:00 --system-name ${{fqdn}}-${{phy2_name}} -d -i 10 --network_interface ${{phy2_nics}}" >> $CONF_FILE
-fi
-
-if [ ! -f $SERVICE_FILE ]; then
-# service file doesn't exist,
-# create the service file
+# rewrite service file
 echo "
 [Unit]
-Description=BSN send_lldp for %I
+Description=BSN send_lldp for physnet 1
 After=syslog.target network.target
 
 [Service]
-cmd_args=\`%I | sed 's/\//\-/g'\`
 Type=simple
-ExecStart=/bin/python /usr/lib/python2.7/site-packages/networking_bigswitch/bsnlldp/send_lldp.py $cmd_args
+ExecStart=/bin/python /usr/lib/python2.7/site-packages/networking_bigswitch/bsnlldp/send_lldp.py --system-desc 5c:16:c7:00:00:00 --system-name ${{HOSTNAME}}-${{phy1_name}} -i 10 --network_interface ${{phy1_nics}}
 Restart=always
 StartLimitInterval=60s
 StartLimitBurst=3
 
 [Install]
 WantedBy=multi-user.target
-" > $SERVICE_FILE
+" > $SERVICE_FILE_1
 
-# link service file to multi user target
-ln -sf $SERVICE_FILE $SERVICE_FILE_MULTI_USER
+# symlink multi user file
+ln -sf $SERVICE_FILE_1 $SERVICE_FILE_MULTI_USER_1
 
+if [[ $active_active != true ]]; then
+echo "
+[Unit]
+Description=BSN send_lldp for physnet 2
+After=syslog.target network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/python /usr/lib/python2.7/site-packages/networking_bigswitch/bsnlldp/send_lldp.py --system-desc 5c:16:c7:00:00:00 --system-name ${{HOSTNAME}}-${{phy2_name}} -i 10 --network_interface ${{phy2_nics}}
+Restart=always
+StartLimitInterval=60s
+StartLimitBurst=3
+
+[Install]
+WantedBy=multi-user.target
+" > $SERVICE_FILE_2
+
+# add multi user symlink for send_lldp_2
+ln -sf $SERVICE_FILE_2 $SERVICE_FILE_MULTI_USER_2
+else
+    rm $SERVICE_FILE_2
+    rm $SERVICE_FILE_MULTI_USER_2
 fi
 
-# start the service as required:
-egrep '^[a-zA-Z0-9_-\ ]+' $CONF_FILE | while read args; do
-    echo "starting send_lldp@ ${{args}}"  >> $LOG_FILE
-    systemctl start send_lldp@"${{args}}" | true
-done
+# reload service files
+systemctl daemon-reload
+
+# start services as required
+if [[ $active_active == true ]]; then
+    systemctl start send_lldp_1
+else
+    systemctl start send_lldp_1
+    systemctl start send_lldp_2
+fi
+
 echo "Finished updating with SRIOV LLDP scripts."   >> $LOG_FILE
