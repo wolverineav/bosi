@@ -11,7 +11,7 @@ from rest import RestLib
 class Environment(object):
     def __init__(self, config, mode, fuel_cluster_id, rhosp, tag,
                  cleanup, skip_ivs_version_check, certificate_dir,
-                 upgrade_dir, offline_dir):
+                 upgrade_dir, offline_dir, sriov):
         # directory for upgrade
         self.upgrade_dir = None
         self.upgrade_pkgs = []
@@ -25,6 +25,9 @@ class Environment(object):
         if offline_dir:
             self.offline_dir = offline_dir
             self.offline_pkgs = [f for f in listdir(offline_dir) if isfile(join(offline_dir, f))]
+
+        # sriov for rhosp
+        self.sriov = sriov
 
         # certificate directory
         self.certificate_dir = certificate_dir
@@ -150,6 +153,8 @@ class Environment(object):
             self.os_version = const.REDHAT_VERSIONS[0]
         self.role = config.get('default_role')
         self.user = config.get('default_user')
+        self.sriov_bond_mode = const.SriovBondMode[
+            config.get('default_sriov_bond_mode').upper()]
         if rhosp:
             self.user = "heat-admin"
         elif fuel_cluster_id:

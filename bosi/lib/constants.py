@@ -1,3 +1,6 @@
+from enum import Enum
+from enum import EnumMeta
+
 # uname -n cutoff length for port group name
 UNAME_CUTOFF = 249
 
@@ -13,6 +16,7 @@ ROLE_COMPUTE = 'compute'
 ROLE_CEPH = 'ceph-osd'
 ROLE_CINDER = "cinder"
 ROLE_MONGO = 'mongo'
+ROLE_SRIOV = 'sriov'
 
 # deployment t6/t5
 T6 = 't6'
@@ -164,3 +168,18 @@ SUPPORT_DIR = "/tmp/support"
 UPGRADE_PYPI = ["ivs-debuginfo", "ivs", "horizon-bsn", "bsnstacklib"]
 UPGRADE_RPM = ["ivs-debuginfo", "ivs", "python-networking-bigswitch", "openstack-neutron-bigswitch-agent", "openstack-neutron-bigswitch-lldp", "python-horizon-bsn"]
 
+
+class MetaEnum(EnumMeta):
+    def __contains__(cls, item):
+        return item in cls.__members__
+
+
+class SriovBondMode(Enum):
+    """
+    This maps sriov bond mode to its corresponding MAC address to be used by
+    the LLDP script as system-desc.
+    """
+    __metaclass__ = MetaEnum
+
+    STATIC = '5c:16:c7:00:00:00'
+    LACP = '5c:16:c7:00:00:04'
