@@ -3,16 +3,13 @@
 fqdn={fqdn}
 phy1_name={phy1_name}
 phy1_nics={phy1_nics}
-phy2_name={phy2_name}
-phy2_nics={phy2_nics}
 active_active={active_active}
+system_desc={system_desc}
 
 # constants for this job
 LOG_FILE="/var/log/bcf_setup.log"
 SERVICE_FILE_1='/usr/lib/systemd/system/send_lldp_1.service'
-SERVICE_FILE_2='/usr/lib/systemd/system/send_lldp_2.service'
 SERVICE_FILE_MULTI_USER_1='/etc/systemd/system/multi-user.target.wants/send_lldp_1.service'
-SERVICE_FILE_MULTI_USER_2='/etc/systemd/system/multi-user.target.wants/send_lldp_2.service'
 
 # new vars with evaluated results
 HOSTNAME=`cat /etc/hostname`
@@ -24,8 +21,7 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 # if service file exists, stop the service. else, return true
-systemctl stop send_lldp_2 | true
-systemctl stop send_lldp_2 | true
+systemctl stop send_lldp_1 | true
 
 # rewrite service file
 echo "
@@ -35,7 +31,7 @@ After=syslog.target network.target
 
 [Service]
 Type=simple
-ExecStart=/bin/python /usr/lib/python2.7/site-packages/networking_bigswitch/bsnlldp/send_lldp.py --system-desc 5c:16:c7:00:00:00 --system-name ${{HOSTNAME}}-${{phy1_name}} -i 10 --network_interface ${{phy1_nics}}
+ExecStart=/bin/python /usr/lib/python2.7/site-packages/networking_bigswitch/bsnlldp/send_lldp.py --system-desc ${{system_desc}} --system-name ${{HOSTNAME}}-${{phy1_name}} -i 10 --network_interface ${{phy1_nics}}
 Restart=always
 StartLimitInterval=60s
 StartLimitBurst=3
@@ -47,39 +43,10 @@ WantedBy=multi-user.target
 # symlink multi user file
 ln -sf $SERVICE_FILE_1 $SERVICE_FILE_MULTI_USER_1
 
-if [[ $active_active != true ]]; then
-echo "
-[Unit]
-Description=BSN send_lldp for physnet 2
-After=syslog.target network.target
-
-[Service]
-Type=simple
-ExecStart=/bin/python /usr/lib/python2.7/site-packages/networking_bigswitch/bsnlldp/send_lldp.py --system-desc 5c:16:c7:00:00:00 --system-name ${{HOSTNAME}}-${{phy2_name}} -i 10 --network_interface ${{phy2_nics}}
-Restart=always
-StartLimitInterval=60s
-StartLimitBurst=3
-
-[Install]
-WantedBy=multi-user.target
-" > $SERVICE_FILE_2
-
-# add multi user symlink for send_lldp_2
-ln -sf $SERVICE_FILE_2 $SERVICE_FILE_MULTI_USER_2
-else
-    rm $SERVICE_FILE_2
-    rm $SERVICE_FILE_MULTI_USER_2
-fi
-
 # reload service files
 systemctl daemon-reload
 
 # start services as required
-if [[ $active_active == true ]]; then
-    systemctl start send_lldp_1
-else
-    systemctl start send_lldp_1
-    systemctl start send_lldp_2
-fi
+systemctl restart send_lldp_1
 
 echo "Finished updating with SRIOV LLDP scripts."   >> $LOG_FILE
