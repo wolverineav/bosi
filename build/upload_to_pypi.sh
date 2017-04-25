@@ -27,7 +27,7 @@ tar -zcvf bosi_offline_packages_$CURR_VERSION.tar.gz bosi_offline
 twine upload dist/* -r pypi -s -i "Big Switch Networks" || true
 # delay of 5 seconds
 sleep 5
-sudo -H pip install --no-cache-dir --upgrade bosi==$CURR_VERSION
+sudo -H pip install --upgrade bosi==$CURR_VERSION
 if [ "$?" -eq "0" ]
 then
   echo "PYPI upload successful."
