@@ -108,40 +108,6 @@ class Node(object):
         self.ivs_debug_pkg = None
         self.ivs_version = None
         self.old_ivs_version = node_config.get('old_ivs_version')
-        self.sriov_bond_mode = env.sriov_bond_mode
-        self.sriov_physnets = {}
-
-        # setup SRIOV physnets
-        if self.role == const.ROLE_SRIOV:
-            if (not 'physnets' in node_config
-                or len(node_config['physnets']) < 1):
-                self.skip = True
-                self.error = (r'''physnets not specified for SRIOV node'''
-                              '''%(hostname)s''' % {'hostname': self.hostname})
-            if 'physnets' in node_config and len(node_config['physnets']) > 1:
-                self.skip = True
-                self.error = (r'''Cannot have more than one physent for '''
-                              '''SRIOV node %(hostname)s. Supported mode is '''
-                              '''active-active.''' %
-                              {'hostname': self.hostname})
-            if not self.skip:
-                for phy in node_config['physnets']:
-                    if ('phy_name' not in phy
-                        or 'uplink_interfaces' not in phy
-                        or len(phy['uplink_interfaces']) != 2):
-                        self.skip = True
-                        self.error = (r'''Either missing phy_name or '''
-                                      '''uplink_interfaces or number of '''
-                                      '''uplink_interface is not equal to 2 '''
-                                      '''for SRIOV node %(hostname)s''' %
-                                      {'hostname': self.hostname})
-                        break
-                    self.sriov_physnets[phy['phy_name']] = \
-                        phy['uplink_interfaces']
-                    if 'bond_mode' in phy:
-                        self.sriov_bond_mode = const.SriovBondMode[
-                            phy['bond_mode'].upper()]
-
 
         # in case of config env (packstack), bond and br_bond
         # may be empty
@@ -366,16 +332,6 @@ class Node(object):
     def get_bsnstacklib_version_upper(self):
         return self.bsnstacklib_version_upper
 
-    def get_sriov_phy_name(self):
-        if len(self.sriov_physnets) < 1:
-            return ''
-        return self.sriov_physnets.items()[0][0]
-
-    def get_sriov_phy_nics(self):
-        if len(self.sriov_physnets) < 1:
-            return ''
-        return ','.join(self.sriov_physnets.items()[0][1])
-
     def __str__(self):
         return (
             r'''
@@ -464,8 +420,6 @@ class Node(object):
             ivs_version: %(ivs_version)s,
             old_ivs_version: %(old_ivs_version)s,
             error: %(error)s,
-            sriov_physnets: %(sriov_physnets)s,
-            sriov_bond_mode: %(sriov_bond_mode)s,
             ''' %
             {'dst_dir': self.dst_dir,
             'bash_script_path': self.bash_script_path,
@@ -551,9 +505,7 @@ class Node(object):
             'ivs_debug_pkg': self.ivs_debug_pkg,
             'ivs_version': self.ivs_version,
             'old_ivs_version': self.old_ivs_version,
-            'error': self.error,
-            'sriov_physnets': self.sriov_physnets,
-            'sriov_bond_mode': self.sriov_bond_mode})
+            'error': self.error})
 
     def __repr__(self):
         return self.__str__()
