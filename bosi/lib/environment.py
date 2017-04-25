@@ -153,11 +153,8 @@ class Environment(object):
             self.os_version = const.REDHAT_VERSIONS[0]
         self.role = config.get('default_role')
         self.user = config.get('default_user')
-        # optional property, set default internally
-        self.sriov_bond_mode = const.SriovBondMode.STATIC
-        if config.get('default_sriov_bond_mode'):
-            self.sriov_bond_mode = const.SriovBondMode[
-                config.get('default_sriov_bond_mode').upper()]
+        self.sriov_bond_mode = const.SriovBondMode[
+            config.get('default_sriov_bond_mode').upper()]
         if rhosp:
             self.user = "heat-admin"
         elif fuel_cluster_id:
