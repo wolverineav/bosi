@@ -1272,7 +1272,7 @@ class Helper(object):
                 continue
 
             profile_lines = [l for l in node_info.splitlines()
-                             if 'profile' in l]
+                             if 'capabilities' in l]
 
             role = ''
             for role_line in profile_lines:
@@ -1667,6 +1667,9 @@ class Helper(object):
             Helper.run_command_on_remote_without_timeout(node, clear_dir_cmd)
             for pkg in node.upgrade_pkgs:
                 if (node.role != const.ROLE_COMPUTE) and ("ivs" in pkg):
+                    safe_print("Skipping pkg {pkg} since node role is not "
+                               "COMPUTE, it is {role}".format(
+                        **{'pkg': pkg, 'role': node.role}))
                     continue
                 safe_print("Copy %(pkg)s to %(hostname)s\n" %
                           {'pkg': pkg, 'hostname': node.fqdn})
