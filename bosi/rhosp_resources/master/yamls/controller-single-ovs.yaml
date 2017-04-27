@@ -147,6 +147,14 @@ resources:
                   addresses:
                     -
                       ip_netmask: {get_param: StorageMgmtIpSubnet}
+                -
+                  type: vlan
+                  device: bond1
+                  vlan_id: {get_param: TenantNetworkVlanID}
+                  addresses:
+                    -
+                      ip_netmask: {get_param: TenantIpSubnet}
+
 
 outputs:
   OS::stack_id:
