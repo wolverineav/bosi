@@ -112,6 +112,32 @@ resources:
                     -
                       type: interface
                       name: <Update-this-value, e.g. nic2 or p1p1>
+                -
+                  type: vlan
+                  device: bond1
+                  vlan_id: {get_param: TenantNetworkVlanID}
+                  addresses:
+                    -
+                      ip_netmask: {get_param: TenantIpSubnet}
+                -
+                  type: vlan
+                  device: bond1
+                  vlan_id: {get_param: ExternalNetworkVlanID}
+                  addresses:
+                    -
+                      ip_netmask: {get_param: ExternalIpSubnet}
+                  routes:
+                    -
+                      ip_netmask: 0.0.0.0/0
+                      next_hop: {get_param: ExternalInterfaceDefaultRoute}
+                -
+                  type: vlan
+                  device: bond1
+                  vlan_id: {get_param: InternalApiNetworkVlanID}
+                  addresses:
+                    -
+                      ip_netmask: {get_param: InternalApiIpSubnet}
+
             -
               type: ovs_bridge
               name: "br-storage"
@@ -139,24 +165,6 @@ resources:
                   addresses:
                     -
                       ip_netmask: {get_param: StorageMgmtIpSubnet}
-                -
-                  type: vlan
-                  device: bond2
-                  vlan_id: {get_param: ExternalNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: ExternalIpSubnet}
-                  routes:
-                    -
-                      ip_netmask: 0.0.0.0/0
-                      next_hop: {get_param: ExternalInterfaceDefaultRoute}
-                -
-                  type: vlan
-                  device: bond2
-                  vlan_id: {get_param: InternalApiNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: InternalApiIpSubnet}
 
 outputs:
   OS::stack_id:
