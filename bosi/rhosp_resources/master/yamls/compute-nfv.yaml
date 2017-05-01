@@ -98,7 +98,7 @@ resources:
                   next_hop: {get_param: ControlPlaneDefaultRoute}
             -
               type: nfvswitch_bridge
-              options: "-c 2-5 --physnet datacentre"
+              options: "-c 2-5 --physnet nfvphysnet"
               members:
                 -
                   type: interface
