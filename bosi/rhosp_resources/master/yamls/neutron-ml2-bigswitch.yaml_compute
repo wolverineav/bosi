@@ -1,0 +1,75 @@
+heat_template_version: 2015-04-30
+
+description: Configure hieradata for Big Switch agents on compute node
+
+parameters:
+  server:
+    description: ID of the controller node to apply this config to
+    type: string
+  NeutronBigswitchAgentEnabled:
+    description: The state of the neutron-bsn-agent service.
+    type: boolean
+    default: false
+  NeutronBigswitchLLDPEnabled:
+    description: The state of the neutron-bsn-lldp service.
+    type: boolean
+    default: true
+  NeutronBigswitchRestproxyServers:
+    description: 'Big Switch controllers ("IP:port,IP:port")'
+    type: string
+  NeutronBigswitchRestproxyServerAuth:
+    description: 'Big Switch controller credentials ("username:password")'
+    type: string
+  NeutronBigswitchRestproxyAutoSyncOnFailure:
+    description: Resynchronize with the new master server on Big Switch failover.
+    type: boolean
+    default: true
+  NeutronBigswitchRestproxyConsistencyInterval:
+    description: Keepalive message interval (from Neutron to Big Switch controller).
+    type: number
+    default: 60
+  NeutronBigswitchRestproxyNeutronId:
+    description: Unique identifier of the Neutron instance for the Big Switch controller.
+    type: string
+    default: 'neutron'
+  NeutronBigswitchRestproxyServerSsl:
+    description: Whether Neutron should use SSL to talk to the Big Switch controllers.
+    type: boolean
+    default: true
+  NeutronBigswitchRestproxySslCertDirectory:
+    description: Directory where Big Switch controller certificate will be stored.
+    type: string
+    default: '/var/lib/neutron'
+
+
+resources:
+  NeutronBigswitchConfig:
+    type: OS::Heat::StructuredConfig
+    properties:
+      group: os-apply-config
+      config:
+        hiera:
+          datafiles:
+            neutron_bigswitch_data:
+              mapped_data:
+                neutron::agents::bigswitch::agent_enabled: {get_input: neutron_enable_bigswitch_agent}
+                neutron::agents::bigswitch::lldp_enabled: {get_input: neutron_enable_bigswitch_lldp}
+                neutron::plugins::ml2::bigswitch::restproxy::servers: '<SERVICE DEFAULT>'
+                neutron::plugins::ml2::bigswitch::restproxy::server_auth: '<SERVICE DEFAULT>'
+
+  NeutronBigswitchDeployment:
+    type: OS::Heat::StructuredDeployment
+    properties:
+      name: NeutronBigswitchDeployment
+      config: {get_resource: NeutronBigswitchConfig}
+      server: {get_param: server}
+      input_values:
+        neutron_enable_bigswitch_agent: {get_param: NeutronBigswitchAgentEnabled}
+        neutron_enable_bigswitch_lldp: {get_param: NeutronBigswitchLLDPEnabled}
+        restproxy_servers: {get_param: NeutronBigswitchRestproxyServers}
+        restproxy_server_auth: {get_param: NeutronBigswitchRestproxyServerAuth }
+
+outputs:
+  deploy_stdout:
+    description: Deployment reference, used to trigger puppet apply on changes
+    value: {get_attr: [NeutronBigswitchDeployment, deploy_stdout]}
