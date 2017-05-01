@@ -140,7 +140,7 @@ resources:
 
             -
               type: ovs_bridge
-              name: "br-storage"
+              name: br-storage
               dns_servers: {get_param: DnsServers}
               members:
                 -
