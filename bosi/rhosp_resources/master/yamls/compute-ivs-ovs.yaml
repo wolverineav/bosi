@@ -98,7 +98,7 @@ resources:
                   next_hop: {get_param: ControlPlaneDefaultRoute}
             -
               type: ovs_bridge
-              name: {get_input: bridge_name}
+              name: br-storage
               dns_servers: {get_param: DnsServers}
               members:
                 -
@@ -115,13 +115,6 @@ resources:
                 -
                   type: vlan
                   device: bond1
-                  vlan_id: {get_param: InternalApiNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: InternalApiIpSubnet}
-                -
-                  type: vlan
-                  device: bond1
                   vlan_id: {get_param: StorageNetworkVlanID}
                   addresses:
                     -
@@ -135,6 +128,13 @@ resources:
                 -
                   type: interface
                   name: <Update-this-value, e.g. nic6 or p2p2>
+                -
+                  type: ivs_interface
+                  name: api
+                  vlan_id: {get_param: InternalApiNetworkVlanID}
+                  addresses:
+                    -
+                      ip_netmask: {get_param: InternalApiIpSubnet
 
 outputs:
   OS::stack_id:
