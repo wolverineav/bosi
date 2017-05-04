@@ -102,6 +102,29 @@ compute() {
             break
         fi
     done
+
+    # do the same as IVS for NFVSWITCH
+    for pkg in $PKGS
+    do
+        if [[ $pkg == *"nfvswitch-debuginfo"* ]]; then
+            rpm -ivhU $pkg --force
+            break
+        fi
+    done
+
+    for pkg in $PKGS
+    do
+        if [[ $pkg == *"nfvswitch"* ]]; then
+            if [[ $pkg == *"nfvswitch-debuginfo"* ]]; then
+                continue
+            fi
+            rpm -ivhU $pkg --force
+            systemctl daemon-reload
+            systemctl enable nfvswitch
+            systemctl restart nfvswitch
+            break
+        fi
+    done
 }
 
 

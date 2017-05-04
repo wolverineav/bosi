@@ -1666,7 +1666,8 @@ class Helper(object):
             clear_dir_cmd = (r'''rm -rf %(dst_dir)s/*''' % {'dst_dir': dst_dir})
             Helper.run_command_on_remote_without_timeout(node, clear_dir_cmd)
             for pkg in node.upgrade_pkgs:
-                if (node.role != const.ROLE_COMPUTE) and ("ivs" in pkg):
+                if (node.role != const.ROLE_COMPUTE
+                    and ("ivs" in pkg or "nfvswitch" in pkg)):
                     safe_print("Skipping pkg {pkg} since node role is not "
                                "COMPUTE, it is {role}".format(
                         **{'pkg': pkg, 'role': node.role}))
