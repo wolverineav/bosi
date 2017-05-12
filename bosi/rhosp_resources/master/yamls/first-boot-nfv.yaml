@@ -68,6 +68,7 @@ resources:
                sed 's/^\(GRUB_CMDLINE_LINUX=".*\)"/\1 $KERNEL_ARGS"/g' -i /etc/default/grub ;
                grub2-mkconfig -o /etc/grub2.cfg
                rpm -ivh --force /root/nfvswitch*.rpm
+               sleep 90
                reboot
             fi
            params:
