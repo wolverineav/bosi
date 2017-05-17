@@ -25,6 +25,7 @@ class Node(object):
             self.mac = self.mac.lower().strip()
         self.role = node_config['role'].lower()
         self.skip = node_config['skip']
+        self.error = node_config.get('error')
         self.deploy_mode = node_config.get('deploy_mode')
         self.os = node_config['os'].lower()
         self.os_version = str(node_config['os_version']).split(".")[0]
@@ -120,7 +121,7 @@ class Node(object):
                               '''%(hostname)s''' % {'hostname': self.hostname})
             if 'physnets' in node_config and len(node_config['physnets']) > 1:
                 self.skip = True
-                self.error = (r'''Cannot have more than one physent for '''
+                self.error = (r'''Cannot have more than one physnet for '''
                               '''SRIOV node %(hostname)s. Supported mode is '''
                               '''active-active.''' %
                               {'hostname': self.hostname})
@@ -157,7 +158,6 @@ class Node(object):
         elif self.os in const.DEB_OS_SET:
             self.ivs_pkg = self.ivs_pkg_map.get('deb')
             self.ivs_debug_pkg = self.ivs_pkg_map.get('debug_deb')
-        self.error = node_config.get('error')
 
         # check os compatability
         if (((self.os == const.CENTOS) and
