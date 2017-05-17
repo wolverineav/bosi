@@ -384,8 +384,10 @@ class Helper(object):
             active_active = False if len(node.sriov_physnets) == 2 else True
             bash = bash_template_content.format(**{
                 'fqdn': node.fqdn,
-                'phy1_name': node.get_sriov_phy_name(),
-                'phy1_nics': node.get_sriov_phy_nics(),
+                'phy1_name': node.get_sriov_phy1_name(),
+                'phy1_nics': node.get_sriov_phy1_nics(),
+                'phy2_name': node.get_sriov_phy2_name(),
+                'phy2_nics': node.get_sriov_phy2_nics(),
                 'active_active': str(active_active).lower(),
                 'system_desc': node.sriov_bond_mode.value,
             })

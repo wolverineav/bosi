@@ -87,6 +87,8 @@ nodes:
   - phy_name: physnetA
     uplink_interfaces:
     - p1p1
+  - phy_name: physnetB
+    uplink_interfaces:
+    - p1p2
     bond_mode: lacp
-
 - hostname: 10.4.9.103
