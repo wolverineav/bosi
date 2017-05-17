@@ -82,7 +82,7 @@ systemctl start send_lldp_1
 
 if [[ $active_active != true ]]; then
     # no bonding, start both agents
-    systemctl start send_lldp_1
+    systemctl enable send_lldp_2
     systemctl start send_lldp_2
 fi
 
