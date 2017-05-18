@@ -6,6 +6,7 @@ phy1_nics={phy1_nics}
 phy2_name={phy2_name}
 phy2_nics={phy2_nics}
 active_active={active_active}
+system_desc={system_desc}
 
 # constants for this job
 LOG_FILE="/var/log/bcf_setup.log"
