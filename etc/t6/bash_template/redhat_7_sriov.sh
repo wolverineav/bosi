@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash -eux
 # env variables to be supplied by BOSI
 fqdn={fqdn}
 phy1_name={phy1_name}
@@ -9,7 +9,6 @@ active_active={active_active}
 system_desc={system_desc}
 
 # constants for this job
-LOG_FILE="/var/log/bcf_setup.log"
 SERVICE_FILE_1='/usr/lib/systemd/system/send_lldp_1.service'
 SERVICE_FILE_2='/usr/lib/systemd/system/send_lldp_2.service'
 SERVICE_FILE_MULTI_USER_1='/etc/systemd/system/multi-user.target.wants/send_lldp_1.service'
@@ -20,7 +19,7 @@ HOSTNAME=`cat /etc/hostname`
 
 # Make sure only root can run this script
 if [ "$(id -u)" != "0" ]; then
-   echo -e "Please run as root" >> $LOG_FILE
+   echo -e "Please run as root"
    exit 1
 fi
 
@@ -87,4 +86,4 @@ if [[ $active_active != true ]]; then
     systemctl start send_lldp_2
 fi
 
-echo "Finished updating with SRIOV LLDP scripts."   >> $LOG_FILE
+echo "Finished updating with SRIOV LLDP scripts."
