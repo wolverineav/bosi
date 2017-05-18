@@ -37,7 +37,7 @@ After=syslog.target network.target
 
 [Service]
 Type=simple
-ExecStart=/bin/python /usr/lib/python2.7/site-packages/networking_bigswitch/bsnlldp/send_lldp.py --system-desc ${{system_desc}} --system-name ${{HOSTNAME}}-${{phy1_name}} -i 10 --network_interface ${{phy1_nics}}
+ExecStart=/bin/python /usr/lib/python2.7/site-packages/networking_bigswitch/bsnlldp/send_lldp.py --system-desc ${{system_desc}} --system-name ${{HOSTNAME}}-${{phy1_name}} -i 10 --network_interface ${{phy1_nics}} --sriov
 Restart=always
 StartLimitInterval=60s
 StartLimitBurst=3
@@ -60,7 +60,7 @@ After=syslog.target network.target
 
 [Service]
 Type=simple
-ExecStart=/bin/python /usr/lib/python2.7/site-packages/networking_bigswitch/bsnlldp/send_lldp.py --system-desc ${{system_desc}} --system-name ${{HOSTNAME}}-${{phy2_name}} -i 10 --network_interface ${{phy2_nics}}
+ExecStart=/bin/python /usr/lib/python2.7/site-packages/networking_bigswitch/bsnlldp/send_lldp.py --system-desc ${{system_desc}} --system-name ${{HOSTNAME}}-${{phy2_name}} -i 10 --network_interface ${{phy2_nics}} --sriov
 Restart=always
 StartLimitInterval=60s
 StartLimitBurst=3
