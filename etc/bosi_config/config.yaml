@@ -44,14 +44,6 @@ deploy_to_specified_nodes_only: false
 # mandatory, used to let bcf ml2 plugin differenciate different openstack clusters
 neutron_id: neutron
 
-# mandatory for rhosp, red hat registration information
-rhosp_automate_register: true
-rhosp_installer_management_interface: eno2
-rhosp_installer_pxe_interface: eno1
-rhosp_undercloud_dns: 8.8.8.8
-rhosp_register_username: bigswitch
-rhosp_register_passwd: bigswitch
-
 # All following configurations can be overrided by openstack installers
 
 # node os user name
@@ -77,6 +69,10 @@ default_uplink_interfaces:
 - p2p1
 - p2p2
 
+# optional, used in RHOSP SRIOV env.
+# legit options - static, lacp
+default_sriov_bond_mode: static
+
 # list of nodes to be deployed
 nodes:
 - hostname: 10.4.9.100
@@ -86,3 +82,13 @@ nodes:
   - p1p1
   - p1p2
 - hostname: 10.4.9.102
+  role: sriov
+  physnets:
+  - phy_name: physnetA
+    uplink_interfaces:
+    - p1p1
+  - phy_name: physnetB
+    uplink_interfaces:
+    - p1p2
+    bond_mode: lacp
+- hostname: 10.4.9.103
