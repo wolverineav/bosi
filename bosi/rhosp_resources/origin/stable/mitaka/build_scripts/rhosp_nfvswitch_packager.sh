@@ -39,6 +39,12 @@ rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/nfvswitch/
 mkdir networking-bigswitch
 rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/networking-bigswitch/centos7-x86_64/$OpenStackBranch/latest/* ./networking-bigswitch
 
+# since we have special branching for networking-bigswitch, we need to sanitize it for horizon-bsn package
+HorizonBsnBranch="$OpenStackBranch"
+if [[ "$OpenStackBranch" == *"liberty"* ]]; then
+    HorizonBsnBranch="origin/stable/liberty"
+fi
+
 # get horizon-bsn packages
 mkdir horizon-bsn
 rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/horizon-bsn/centos7-x86_64/$OpenStackBranch/latest/* ./horizon-bsn
