@@ -87,15 +87,6 @@ class Helper(object):
             node, "sudo chmod -R 777 %s" % node.log)
 
     @staticmethod
-    def get_setup_node_ip():
-        """
-        Get the setup node's eth0 ip
-        """
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(('bigswitch.com', 0))
-        return s.getsockname()[0]
-
-    @staticmethod
     def run_command_on_local_without_timeout(command):
         output, error = subprocess.Popen(
             command, stdout=subprocess.PIPE,

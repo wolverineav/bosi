@@ -99,7 +99,6 @@ class Node(object):
         self.physnet = env.physnet
         self.lower_vlan = env.lower_vlan
         self.upper_vlan = env.upper_vlan
-        self.setup_node_ip = env.setup_node_ip
         self.setup_node_dir = env.setup_node_dir
         self.selinux_mode = env.selinux_mode
         self.fuel_cluster_id = env.fuel_cluster_id
@@ -463,7 +462,6 @@ class Node(object):
             physnet: %(physnet)s,
             lower_vlan: %(lower_vlan)s,
             upper_vlan: %(upper_vlan)s,
-            setup_node_ip: %(setup_node_ip)s,
             setup_node_dir: %(setup_node_dir)s,
             selinux_mode: %(selinux_mode)s,
             fuel_cluster_id: %(fuel_cluster_id)s,
@@ -551,7 +549,6 @@ class Node(object):
             'physnet': self.physnet,
             'lower_vlan': self.lower_vlan,
             'upper_vlan': self.upper_vlan,
-            'setup_node_ip': self.setup_node_ip,
             'setup_node_dir': self.setup_node_dir,
             'selinux_mode': self.selinux_mode,
             'fuel_cluster_id': self.fuel_cluster_id,
