@@ -68,8 +68,7 @@ class Environment(object):
         self.install_bsnstacklib = True
         self.install_all = True
 
-        # setup node ip and directory
-        self.setup_node_ip = Helper.get_setup_node_ip()
+        # setup node directory
         example_yamls = ["/usr/local/etc/bosi/config.yaml",
                          "/usr/etc/bosi/config.yaml"]
         for example_yaml in example_yamls:
