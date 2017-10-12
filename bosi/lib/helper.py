@@ -1235,8 +1235,9 @@ class Helper(object):
                 hostname = str(
                     netaddr.IPAddress(columns[6].strip().split('=')[1]))
             except IndexError:
-                raise Exception("Could not parse node list:\n%(node_list)s\n"
-                                % {'node_list': node_list})
+                safe_print("Skipping the node due to parsing error. Node "
+                           "listing was: %(line)s\n" % {'line': line})
+                continue
 
             if online.lower() != 'active':
                 # skip offline nodes
