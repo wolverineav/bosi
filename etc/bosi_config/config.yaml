@@ -1,7 +1,7 @@
 # configuration won't be overrided by any openstack installer
 
-# mandatory, openstack release, supporting juno, kilo and liberty
-openstack_release: liberty
+# mandatory, openstack release, supporting mitaka and newton
+openstack_release: newton
 
 # mandatory, skip all nodes if true
 default_skip: false
@@ -11,7 +11,7 @@ ivs_packages:
 - /root/BCF-SL-VX-master-2016-03-09.tar.gz
 
 # mandatory, bcf version
-bcf_version: 3.6.0
+bcf_version: 4.2.0
 
 # mandatory, bcf controller ip:port
 bcf_controllers:
