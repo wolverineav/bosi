@@ -13,6 +13,3 @@ virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload ivs-debuginfo-${ivs
 
 virt-customize -a ${image_dir}/overcloud-full.qcow2 --firstboot startup.sh
 
-# ensure os-net-config is not overwritten by empty template
-# new heat-hiera hooks are used to configure it, starting with Ocata (RHOSP 11)
-virt-customize -a ${image_dir}/overcloud-full.qcow2 --delete /usr/libexec/os-apply-config/templates/etc/os-net-config/config.json
