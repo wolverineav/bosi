@@ -3,7 +3,6 @@ heat_template_version: 2015-04-30
 description: >
   Software Config to drive os-net-config with 2 bonded nics on a bridge
   with VLANs attached for the compute role.
-
 parameters:
   ControlPlaneIp:
     default: ''
@@ -39,7 +38,7 @@ parameters:
                  lacp=active and/or bond_mode=balance-slb using this option.
     type: string
   InternalApiNetworkVlanID:
-    default: 20 
+    default: 20
     description: Vlan ID for the internal_api network traffic.
     type: number
   StorageNetworkVlanID:
