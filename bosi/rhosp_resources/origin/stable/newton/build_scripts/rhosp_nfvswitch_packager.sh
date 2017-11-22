@@ -9,13 +9,14 @@
 # it can be added to build params
 Revision="0"
 
-# mapping for OpenStackBranch to RHOSPVersion, default is latest = 10
+# mapping for OpenStackBranch to RHOSPVersion, default is latest = 9
 # occasionally cleanup when we stop supporting certain versions
-RHOSPVersion="10"
+RHOSPVersion="9"
 case "$OpenStackBranch" in
-  *"ocata"*) RHOSPVersion="11" ;;
   *"newton"*) RHOSPVersion="10" ;;
   *"mitaka"*) RHOSPVersion="9" ;;
+  *"liberty"*) RHOSPVersion="8" ;;
+  *"kilo"*) RHOSPVersion="7" ;;
 esac
 
 # if IvsBranch is not specified, it is same as BcfBranch
@@ -40,6 +41,9 @@ rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/networking
 
 # since we have special branching for networking-bigswitch, we need to sanitize it for horizon-bsn package
 HorizonBsnBranch="$OpenStackBranch"
+if [[ "$OpenStackBranch" == *"liberty"* ]]; then
+    HorizonBsnBranch="origin/stable/liberty"
+fi
 
 # get horizon-bsn packages
 mkdir horizon-bsn
