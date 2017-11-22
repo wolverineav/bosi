@@ -1,8 +1,7 @@
-heat_template_version: 2016-04-08
+heat_template_version: ocata
 
 description: >
-  Install Neutron Bigswitch Agent
-
+  Installs bigswitch agent and enables the services
 parameters:
   ServiceNetMap:
     default: {}
@@ -19,11 +18,12 @@ parameters:
                  via parameter_defaults in the resource registry.
     type: json
 
+
 outputs:
   role_data:
-    description: neutron bigswitch agent
+    description: Configure the bigswitch agent services
     value:
-      service_name: 
+      service_name: neutron_bigswitch_agent
       step_config: |
         if hiera('step') >= 4 {
           include ::neutron::agents::bigswitch
