@@ -3,7 +3,7 @@
 import argparse
 import yaml
 
-SUPPORTED_BOND = ['ovs_bond', 'linux_bond']
+SUPPORTED_BOND = ['linux_bond']
 
 
 def validate_yaml_bridge(yaml_file_path):
