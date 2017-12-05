@@ -134,7 +134,7 @@ resources:
                   vlan_id: {get_param: InternalApiNetworkVlanID}
                   addresses:
                     -
-                      ip_netmask: {get_param: InternalApiIpSubnet
+                      ip_netmask: {get_param: InternalApiIpSubnet}
 
 outputs:
   OS::stack_id:
