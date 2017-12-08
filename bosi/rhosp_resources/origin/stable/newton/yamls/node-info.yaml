@@ -1,5 +1,4 @@
 parameter_defaults:
-  CloudDomain: <Update-this-value>
   OvercloudControlFlavor: control
   OvercloudComputeFlavor: compute
   OvercloudCephStorageFlavor: ceph-storage

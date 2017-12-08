@@ -2,7 +2,7 @@ heat_template_version: 2015-04-30
 
 description: >
   Software Config to drive os-net-config with 2 bonded nics on a bridge
-  with VLANs attached for the compute role.
+  with VLANs attached for the ceph storage role.
 
 parameters:
   ControlPlaneIp:
@@ -38,17 +38,13 @@ parameters:
     description: The ovs_options string for the bond interface. Set things like
                  lacp=active and/or bond_mode=balance-slb using this option.
     type: string
-  InternalApiNetworkVlanID:
-    default: 20 
-    description: Vlan ID for the internal_api network traffic.
-    type: number
   StorageNetworkVlanID:
     default: 30
     description: Vlan ID for the storage network traffic.
     type: number
-  TenantNetworkVlanID:
-    default: 50
-    description: Vlan ID for the tenant network traffic.
+  StorageMgmtNetworkVlanID:
+    default: 40
+    description: Vlan ID for the storage mgmt network traffic.
     type: number
   ManagementNetworkVlanID:
     default: 60
@@ -71,56 +67,61 @@ parameters:
 
 resources:
   OsNetConfigImpl:
-    type: OS::Heat::SoftwareConfig
+    type: OS::Heat::StructuredConfig
     properties:
-      group: script
+      group: os-apply-config
       config:
-        str_replace:
-          template:
-            get_file: ../../scripts/run-os-net-config.sh
-          params:
-            $network_config:
-              network_config:
-              - type: interface
-                name: <Update-this-value, e.g. nic1 or em1>
-                use_dhcp: false
-                dns_servers: {get_param: DnsServers}
-                addresses:
-                  -
-                    ip_netmask:
-                      list_join:
-                        - '/'
-                        - - {get_param: ControlPlaneIp}
-                          - {get_param: ControlPlaneSubnetCidr}
-                routes:
-                  -
-                    ip_netmask: 169.254.169.254/32
-                    next_hop: {get_param: EC2MetadataIp}
-                  -
-                    default: true
-                    next_hop: {get_param: ControlPlaneDefaultRoute}
-              - type: ivs_bridge
-                members:
-                  -
-                    type: interface
-                    name: <Update-this-value, e.g. nic2 or p1p1>
-                  -
-                    type: interface
-                    name: <Update-this-value, e.g. nic3 or p1p2>
-                  -
-                    type: ivs_interface
-                    name: api
-                    vlan_id: {get_param: InternalApiNetworkVlanID}
-                    addresses:
-                      -
-                        ip_netmask: {get_param: InternalApiIpSubnet}
-                  -
-                    type: ivs_interface
-                    name: storage
-                    vlan_id: {get_param: StorageNetworkVlanID}
-                    addresses:
-                      -
-                        ip_netmask: {get_param: StorageIpSubnet}
+        os_net_config:
+          network_config:
+            -
+              type: interface
+              name: <Update-this-value, e.g. nic1 or em1>
+              use_dhcp: false
+              dns_servers: {get_param: DnsServers}
+              addresses:
+                -
+                  ip_netmask:
+                    list_join:
+                      - '/'
+                      - - {get_param: ControlPlaneIp}
+                        - {get_param: ControlPlaneSubnetCidr}
+              routes:
+                -
+                  ip_netmask: 169.254.169.254/32
+                  next_hop: {get_param: EC2MetadataIp}
+                -
+                  default: true
+                  next_hop: {get_param: ControlPlaneDefaultRoute}
+            -
+              type: ovs_bridge
+              name: {get_input: bridge_name}
+              members:
+                -
+                  type: linux_bond
+                  name: bond1
+                  bonding_options: {get_param: BondInterfaceOvsOptions}
+                  members:
+                    -
+                      type: interface
+                      name: <Update-this-value, e.g. nic2 or p1p1>
+                      primary: true
+                    -
+                      type: interface
+                      name: <Update-this-value, e.g. nic3 or p1p2>
+                -
+                  type: vlan
+                  device: bond1
+                  vlan_id: {get_param: StorageNetworkVlanID}
+                  addresses:
+                    -
+                      ip_netmask: {get_param: StorageIpSubnet}
+                -
+                  type: vlan
+                  device: bond1
+                  vlan_id: {get_param: StorageMgmtNetworkVlanID}
+                  addresses:
+                    -
+                      ip_netmask: {get_param: StorageMgmtIpSubnet}
 
 outputs:
   OS::stack_id:

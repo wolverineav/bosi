@@ -1,7 +1,6 @@
+heat_template_version: 2015-04-30
 
-heat_template_version: ocata
-
-description: Configure hieradata for Neutron Big Switch configuration
+description: Configure hieradata for Big Switch agents on compute node
 
 parameters:
   server:
@@ -10,11 +9,11 @@ parameters:
   NeutronBigswitchAgentEnabled:
     description: The state of the neutron-bsn-agent service.
     type: boolean
-    default: true
+    default: false
   NeutronBigswitchLLDPEnabled:
     description: The state of the neutron-bsn-lldp service.
     type: boolean
-    default: false
+    default: true
   NeutronBigswitchRestproxyServers:
     description: 'Big Switch controllers ("IP:port,IP:port")'
     type: string
@@ -47,19 +46,16 @@ resources:
   NeutronBigswitchConfig:
     type: OS::Heat::StructuredConfig
     properties:
-      group: hiera
+      group: os-apply-config
       config:
-        datafiles:
-          neutron_bigswitch_data:
-            neutron::agents::bigswitch::agent_enabled: {get_input: neutron_enable_bigswitch_agent}
-            neutron::agents::bigswitch::lldp_enabled: {get_input: neutron_enable_bigswitch_lldp}
-            neutron::plugins::ml2::bigswitch::restproxy::servers: {get_input: restproxy_servers}
-            neutron::plugins::ml2::bigswitch::restproxy::server_auth: {get_input: restproxy_server_auth}
-            neutron::plugins::ml2::bigswitch::restproxy::auto_sync_on_failure: {get_input: restproxy_auto_sync_on_failure}
-            neutron::plugins::ml2::bigswitch::restproxy::consistency_interval: {get_input: restproxy_consistency_interval}
-            neutron::plugins::ml2::bigswitch::restproxy::neutron_id: {get_input: restproxy_neutron_id}
-            neutron::plugins::ml2::bigswitch::restproxy::server_ssl: {get_input: restproxy_server_ssl}
-            neutron::plugins::ml2::bigswitch::restproxy::ssl_cert_directory: {get_input: restproxy_ssl_cert_directory}
+        hiera:
+          datafiles:
+            neutron_bigswitch_data:
+              mapped_data:
+                neutron::agents::bigswitch::agent_enabled: {get_input: neutron_enable_bigswitch_agent}
+                neutron::agents::bigswitch::lldp_enabled: {get_input: neutron_enable_bigswitch_lldp}
+                neutron::plugins::ml2::bigswitch::restproxy::servers: '<SERVICE DEFAULT>'
+                neutron::plugins::ml2::bigswitch::restproxy::server_auth: '<SERVICE DEFAULT>'
 
   NeutronBigswitchDeployment:
     type: OS::Heat::StructuredDeployment
@@ -72,11 +68,6 @@ resources:
         neutron_enable_bigswitch_lldp: {get_param: NeutronBigswitchLLDPEnabled}
         restproxy_servers: {get_param: NeutronBigswitchRestproxyServers}
         restproxy_server_auth: {get_param: NeutronBigswitchRestproxyServerAuth }
-        restproxy_auto_sync_on_failure: {get_param: NeutronBigswitchRestproxyAutoSyncOnFailure}
-        restproxy_consistency_interval: {get_param: NeutronBigswitchRestproxyConsistencyInterval}
-        restproxy_neutron_id: {get_param: NeutronBigswitchRestproxyNeutronId}
-        restproxy_server_ssl: {get_param: NeutronBigswitchRestproxyServerSsl}
-        restproxy_ssl_cert_directory: {get_param: NeutronBigswitchRestproxySslCertDirectory}
 
 outputs:
   deploy_stdout:

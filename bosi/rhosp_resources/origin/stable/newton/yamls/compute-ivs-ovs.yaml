@@ -71,65 +71,70 @@ parameters:
 
 resources:
   OsNetConfigImpl:
-    type: OS::Heat::SoftwareConfig
+    type: OS::Heat::StructuredConfig
     properties:
-      group: script
+      group: os-apply-config
       config:
-        str_replace:
-          template:
-            get_file: ../../scripts/run-os-net-config.sh
-          params:
-            $network_config:
-              network_config:
-              - type: interface
-                name: <Update-this-value, e.g. nic1 or em1>
-                use_dhcp: false
-                dns_servers: {get_param: DnsServers}
-                addresses:
-                  -
-                    ip_netmask:
-                      list_join:
-                        - '/'
-                        - - {get_param: ControlPlaneIp}
-                          - {get_param: ControlPlaneSubnetCidr}
-                routes:
-                  -
-                    ip_netmask: 169.254.169.254/32
-                    next_hop: {get_param: EC2MetadataIp}
-                  -
-                    default: true
-                    next_hop: {get_param: ControlPlaneDefaultRoute}
-              - type: ovs_bridge
-                name: {get_input: bridge_name}
-                dns_servers: {get_param: DnsServers}
-                members:
-                  -
-                    type: linux_bond
-                    name: bond1
-                    bonding_options: {get_param: BondInterfaceOvsOptions}
-                    members:
-                      -
-                        type: interface
-                        name: p1p1
-                        primary: true
-                      -
-                        type: interface
-                        name: p1p2
-                  -
-                    type: vlan
-                    device: bond1
-                    vlan_id: {get_param: InternalApiNetworkVlanID}
-                    addresses:
-                      -
-                        ip_netmask: {get_param: InternalApiIpSubnet}
-                  -
-                    type: vlan
-                    device: bond1
-                    vlan_id: {get_param: StorageNetworkVlanID}
-                    addresses:
-                      -
-                        ip_netmask: {get_param: StorageIpSubnet}
-            
+        os_net_config:
+          network_config:
+            -
+              type: interface
+              name: <Update-this-value, e.g. nic1 or em1>
+              use_dhcp: false
+              dns_servers: {get_param: DnsServers}
+              addresses:
+                -
+                  ip_netmask:
+                    list_join:
+                      - '/'
+                      - - {get_param: ControlPlaneIp}
+                        - {get_param: ControlPlaneSubnetCidr}
+              routes:
+                -
+                  ip_netmask: 169.254.169.254/32
+                  next_hop: {get_param: EC2MetadataIp}
+                -
+                  default: true
+                  next_hop: {get_param: ControlPlaneDefaultRoute}
+            -
+              type: ovs_bridge
+              name: br-storage
+              dns_servers: {get_param: DnsServers}
+              members:
+                -
+                  type: linux_bond
+                  name: bond1
+                  bonding_options: {get_param: BondInterfaceOvsOptions}
+                  members:
+                    -
+                      type: interface
+                      name: <Update-this-value, e.g. nic2 or p1p1>
+                    -
+                      type: interface
+                      name: <Update-this-value, e.g. nic3 or p1p2>
+                -
+                  type: vlan
+                  device: bond1
+                  vlan_id: {get_param: StorageNetworkVlanID}
+                  addresses:
+                    -
+                      ip_netmask: {get_param: StorageIpSubnet}
+            - 
+              type: ivs_bridge
+              members:
+                -
+                  type: interface
+                  name: <Update-this-value, e.g. nic5 or p2p1>
+                -
+                  type: interface
+                  name: <Update-this-value, e.g. nic6 or p2p2>
+                -
+                  type: ivs_interface
+                  name: api
+                  vlan_id: {get_param: InternalApiNetworkVlanID}
+                  addresses:
+                    -
+                      ip_netmask: {get_param: InternalApiIpSubnet}
 
 outputs:
   OS::stack_id:
