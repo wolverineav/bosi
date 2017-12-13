@@ -1590,8 +1590,9 @@ class Helper(object):
                 controller_node, '/etc/neutron', 'neutron.conf',
                 controller_node.setup_node_dir)
             # put all controllers to rabbit hosts
-            neutron_conf = open(
+            neutron_conf_file = open(
                 "%s/neutron.conf" % controller_node.setup_node_dir, 'r')
+            neutron_conf = neutron_conf_file.readlines()
             if len(controller_nodes) == 1:
                 for line in neutron_conf:
                     if line.startswith("rabbit_host"):
