@@ -4,7 +4,7 @@ $binpath = "/usr/local/bin/:/bin/:/usr/bin:/usr/sbin:/usr/local/sbin:/sbin"
 # lldp
 file { "/bin/send_lldp":
     ensure  => file,
-    mode    => 0777,
+    mode    => "0777",
 }
 file { "/etc/init/send_lldp.conf":
     ensure  => file,
