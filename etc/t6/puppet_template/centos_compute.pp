@@ -27,7 +27,7 @@ class ivs_internal_port_ips {
     $port_ips = [%(port_ips)s]
     file { "/etc/rc.d/rc.local":
         ensure  => file,
-        mode    => 0777,
+        mode    => "0777",
     }->
     file_line { "restart ivs":
         require => File['/etc/rc.d/rc.local'],
@@ -54,7 +54,7 @@ service { "ntpd":
 # ivs configruation and service
 file{'/etc/sysconfig/ivs':
     ensure  => file,
-    mode    => 0644,
+    mode    => "0644",
     content => "%(ivs_daemon_args)s",
 } 
 
@@ -67,7 +67,7 @@ file { '/usr/lib64/debug':
 # load 8021q module on boot
 file {'/etc/sysconfig/modules/8021q.modules':
     ensure  => file,
-    mode    => 0777,
+    mode    => "0777",
     content => "modprobe 8021q",
 }
 exec { "load 8021q":

@@ -15,7 +15,7 @@ service { "ntpd":
 # load 8021q module on boot
 file {'/etc/sysconfig/modules/8021q.modules':
     ensure  => file,
-    mode    => 0777,
+    mode    => "0777",
     content => "modprobe 8021q",
 }
 exec { "load 8021q":
@@ -26,7 +26,7 @@ exec { "load 8021q":
 # lldp
 file { "/bin/send_lldp":
     ensure  => file,
-    mode    => 0777,
+    mode    => "0777",
 }
 file { "/usr/lib/systemd/system/send_lldp.service":
     ensure  => file,
