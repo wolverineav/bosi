@@ -5,7 +5,7 @@ $uplinks = [%(uplinks)s]
 # lldp
 file { "/bin/send_lldp":
     ensure  => file,
-    mode    => 0777,
+    mode    => "0777",
 }
 file { "/etc/init/send_lldp.conf":
     ensure  => file,
@@ -194,7 +194,7 @@ service {'neutron-bsn-agent':
 # ensure neutron-plugin-openvswitch-agent is running
 file { "/etc/init/neutron-plugin-openvswitch-agent.conf":
     ensure  => file,
-    mode    => 0644,
+    mode    => "0644",
 }
 service { 'neutron-plugin-openvswitch-agent':
   ensure     => 'running',

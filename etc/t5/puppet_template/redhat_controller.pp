@@ -14,7 +14,7 @@ define uplink_mtu {
 # edit rc.local for default gw
 file { "/etc/rc.d/rc.local":
     ensure  => file,
-    mode    => 0777,
+    mode    => "0777",
 }->
 file_line { "remove touch /var/lock/subsys/local":
     path    => '/etc/rc.d/rc.local',
