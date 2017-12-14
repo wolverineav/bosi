@@ -55,7 +55,7 @@ ini_setting { "keystone.conf notification driver":
 # load 8021q module on boot
 file {'/etc/sysconfig/modules/8021q.modules':
     ensure  => file,
-    mode    => 0777,
+    mode    => "0777",
     content => "modprobe 8021q",
 }
 exec { "load 8021q":

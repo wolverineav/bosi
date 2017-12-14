@@ -1590,8 +1590,9 @@ class Helper(object):
                 controller_node, '/etc/neutron', 'neutron.conf',
                 controller_node.setup_node_dir)
             # put all controllers to rabbit hosts
-            neutron_conf = open(
+            neutron_conf_file = open(
                 "%s/neutron.conf" % controller_node.setup_node_dir, 'r')
+            neutron_conf = neutron_conf_file.readlines()
             if len(controller_nodes) == 1:
                 for line in neutron_conf:
                     if line.startswith("rabbit_host"):
@@ -1613,6 +1614,17 @@ class Helper(object):
                             rabbit_hosts.add(host.strip())
                         break
 
+            # if the above fails for rabbit_host, it means we're on Ocata or
+            # later. hence, it has been renamed to transport_url. e.g.
+            # transport_url=rabbit://guest:guest@10.8.8.113:5672/
+            if not len(rabbit_hosts):
+                for line in neutron_conf:
+                    if line.startswith("transport_url"):
+                        host_url_str = line.split("=")[1].strip()
+                        host_socket_str = host_url_str.split("@")[1].strip("/")
+
+                        rabbit_hosts.add(host_socket_str.split(":")[0].strip())
+                        rabbit_port = host_socket_str.split(":")[1].strip()
 
         if len(controller_nodes):
             controller_node = controller_nodes[0]

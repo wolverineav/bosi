@@ -28,7 +28,7 @@ class ivs_internal_port_ips {
     $default_gw = "%(default_gw)s"
     file { "/etc/rc.local":
         ensure  => file,
-        mode    => 0777,
+        mode    => "0777",
     }->
     file_line { "remove exit 0":
         path    => '/etc/rc.local',
@@ -67,7 +67,7 @@ include ivs_internal_port_ips
 # ivs configruation and service
 file { '/etc/default/ivs':
     ensure  => file,
-    mode    => 0644,
+    mode    => "0644",
     content => "%(ivs_daemon_args)s",
     notify  => Service['ivs'],
 }

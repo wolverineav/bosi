@@ -5,7 +5,7 @@ $uplinks = [%(uplinks)s]
 # lldp
 file { "/bin/send_lldp":
     ensure  => file,
-    mode    => 0777,
+    mode    => "0777",
 }
 file { "/etc/init/send_lldp.conf":
     ensure  => file,
