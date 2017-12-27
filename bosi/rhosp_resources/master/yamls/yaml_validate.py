@@ -63,7 +63,7 @@ def validate_yaml_bridge(yaml_file_path):
               {'error_string': fileError})
     except Exception as e:
         print("ERROR while checking bridge config in yaml: %(error_string)s" %
-              {'error_string': e.message})
+              {'error_string': e})
 
     if valid_bridge:
         print ("VALID bridge configuration in %s" % yaml_file_path)
@@ -121,10 +121,6 @@ def main():
                                   help="Find all YAML files in the input "
                                        "directory and validate their syntax.")
     args = parser.parse_args()
-
-    # if args.bridge and args.syntax:
-    #     print ("Please use only one option - either --bridge or --syntax")
-    #     return
 
     if args.check_bridge_config:
         validate_yaml_bridge(args.check_bridge_config)
