@@ -10,10 +10,14 @@ YAML_FILE_EXT = ".yaml"
 SUPPORTED_BOND = ['linux_bond']
 
 
-def help():
-    """ Print how to use the script """
-    print "Usage: %s <directory>" % sys.argv[0]
+class BsnParser(argparse.ArgumentParser):
+    """Overrides the error handler to print help text each time with error.
 
+    """
+    def error(self, message):
+        sys.stderr.write('error: %s\n' % message)
+        self.print_help()
+        sys.exit(2)
 
 
 def validate_yaml_bridge(yaml_file_path):
@@ -25,34 +29,41 @@ def validate_yaml_bridge(yaml_file_path):
     :return:
     """
     valid_bridge = False
-    yaml_file = open(yaml_file_path, 'r')
-    config_yaml = yaml.load(yaml_file)
-    network_config_list = (config_yaml['resources']['OsNetConfigImpl'][
-                               'properties']['config']['str_replace'][
-                               'params']['$network_config']['network_config'])
-    for config in network_config_list:
-        config_type = config.get('type')
-        # if its neither ivs_bridge or ovs_bridge, move on
-        if config_type != 'ivs_bridge' and config_type != 'ovs_bridge':
-            continue
-
-        # for ivs_bridge, no other checks required. return True
-        if config_type == 'ivs_bridge':
-            valid_bridge = True
-            break
-
-        # for ovs_bridge, check that bridge name is br-ex
-        if config_type == 'ovs_bridge':
-            if config.get('name') != 'br-ex':
+    try:
+        yaml_file = open(yaml_file_path, 'r')
+        config_yaml = yaml.load(yaml_file)
+        network_config_list = (config_yaml['resources']['OsNetConfigImpl'][
+                                   'properties']['config']['str_replace'][
+                                   'params']['$network_config']['network_config'])
+        for config in network_config_list:
+            config_type = config.get('type')
+            # if its neither ivs_bridge or ovs_bridge, move on
+            if config_type != 'ivs_bridge' and config_type != 'ovs_bridge':
                 continue
-            members = config.get('members')
-            for member in members:
-                # also check that type of bond for interface is supported
-                if member.get('type') not in SUPPORTED_BOND:
-                    continue
-                # everythig checks out, return True
+
+            # for ivs_bridge, no other checks required. return True
+            if config_type == 'ivs_bridge':
                 valid_bridge = True
                 break
+
+            # for ovs_bridge, check that bridge name is br-ex
+            if config_type == 'ovs_bridge':
+                if config.get('name') != 'br-ex':
+                    continue
+                members = config.get('members')
+                for member in members:
+                    # also check that type of bond for interface is supported
+                    if member.get('type') not in SUPPORTED_BOND:
+                        continue
+                    # everythig checks out, return True
+                    valid_bridge = True
+                    break
+    except IOError as fileError:
+        print("INVALID file passed as argument. \nERROR: %(error_string)s" %
+              {'error_string': fileError})
+    except Exception as e:
+        print("ERROR while checking bridge config in yaml: %(error_string)s" %
+              {'error_string': e.message})
 
     if valid_bridge:
         print ("VALID bridge configuration in %s" % yaml_file_path)
@@ -100,30 +111,27 @@ def check_yaml_syntax_dir(yaml_dir):
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--bridge", required=False,
-                        help="RHOSP controller.yaml or compute.yaml with "
-                             "the bridge configuration to be validated.")
-    parser.add_argument("--syntax", required=False,
-                        help="Find all YAML files in the input directory and "
-                             "validate their syntax.")
+    parser = BsnParser()
+    either_one_group = parser.add_mutually_exclusive_group(required=True)
+    either_one_group.add_argument("-b", "--check-bridge-config",
+                                  help="RHOSP controller.yaml or compute.yaml "
+                                       "or ceph-storage.yaml with the bridge "
+                                       "configuration to be validated.")
+    either_one_group.add_argument("-s", "--check-syntax",
+                                  help="Find all YAML files in the input "
+                                       "directory and validate their syntax.")
     args = parser.parse_args()
 
-    if not args.bridge and not args.syntax:
-        print ("Please specify at least one option - either --bridge or "
-               "--syntax")
+    # if args.bridge and args.syntax:
+    #     print ("Please use only one option - either --bridge or --syntax")
+    #     return
+
+    if args.check_bridge_config:
+        validate_yaml_bridge(args.check_bridge_config)
         return
 
-    if args.bridge and args.syntax:
-        print ("Please use only one option - either --bridge or --syntax")
-        return
-
-    if args.bridge:
-        validate_yaml_bridge(args.bridge)
-        return
-
-    if args.syntax:
-        check_yaml_syntax_dir(args.syntax)
+    if args.check_syntax:
+        check_yaml_syntax_dir(args.check_syntax)
         return
 
 
