@@ -101,7 +101,7 @@ resources:
             $network_config:
               network_config:
               - type: interface
-                name: eno3
+                name: <Update-this-value, e.g. nic1 or em1>
                 use_dhcp: false
                 dns_servers:
                   get_param: DnsServers
@@ -129,9 +129,9 @@ resources:
                     get_param: BondInterfaceOvsOptions
                   members:
                   - type: interface
-                    name: eno1
+                    name: <Update-this-value, e.g. nic2 or p1p1>
                   - type: interface
-                    name: eno2
+                    name: <Update-this-value, e.g. nic3 or p1p2>
                 - type: vlan
                   device: bond1
                   vlan_id:
