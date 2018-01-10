@@ -1,6 +1,6 @@
 heat_template_version: ocata
 description: >
-  Software Config to drive os-net-config with 2 bonded nics on a bridge with VLANs attached for the ceph storage role.
+  Software Config to drive os-net-config with 2 bonded nics on a bridge with VLANs attached for the compute role.
 parameters:
   ControlPlaneIp:
     default: ''
@@ -119,18 +119,26 @@ resources:
                   next_hop:
                     get_param: ControlPlaneDefaultRoute
               - type: ovs_bridge
-                name: br-bond
+                name: bridge_name
+                dns_servers:
+                  get_param: DnsServers
                 members:
-                - type: ovs_bond
+                - type: linux_bond
                   name: bond1
-                  ovs_options:
+                  bonding_options:
                     get_param: BondInterfaceOvsOptions
                   members:
                   - type: interface
                     name: <Update-this-value, e.g. nic2 or p1p1>
-                    primary: true
                   - type: interface
                     name: <Update-this-value, e.g. nic3 or p1p2>
+                - type: vlan
+                  device: bond1
+                  vlan_id:
+                    get_param: InternalApiNetworkVlanID
+                  addresses:
+                  - ip_netmask:
+                      get_param: InternalApiIpSubnet
                 - type: vlan
                   device: bond1
                   vlan_id:
@@ -141,10 +149,10 @@ resources:
                 - type: vlan
                   device: bond1
                   vlan_id:
-                    get_param: StorageMgmtNetworkVlanID
+                    get_param: TenantNetworkVlanID
                   addresses:
                   - ip_netmask:
-                      get_param: StorageMgmtIpSubnet
+                      get_param: TenantIpSubnet
                 # Uncomment when including environments/network-management.yaml
                 # If setting default route on the Management interface, comment
                 # out the default route on the Control Plane.
@@ -164,3 +172,4 @@ outputs:
     description: The OsNetConfigImpl resource.
     value:
       get_resource: OsNetConfigImpl
+

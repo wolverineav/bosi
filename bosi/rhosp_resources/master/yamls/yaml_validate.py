@@ -29,6 +29,7 @@ def validate_yaml_bridge(yaml_file_path):
     :return:
     """
     valid_bridge = False
+    last_exception = None
     try:
         yaml_file = open(yaml_file_path, 'r')
         config_yaml = yaml.load(yaml_file)
@@ -39,6 +40,9 @@ def validate_yaml_bridge(yaml_file_path):
             config_type = config.get('type')
             # if its neither ivs_bridge or ovs_bridge, move on
             if config_type != 'ivs_bridge' and config_type != 'ovs_bridge':
+                last_exception = Exception('Bridge type must be either '
+                                           'ivs_bridge or ovs_bridge, neither '
+                                           'found in config.')
                 continue
 
             # for ivs_bridge, no other checks required. return True
@@ -48,16 +52,34 @@ def validate_yaml_bridge(yaml_file_path):
 
             # for ovs_bridge, check that bridge name is br-ex
             if config_type == 'ovs_bridge':
-                if config.get('name') != 'br-ex':
+                bridge_name = config.get('name')
+                # name of the bridge should be either 'br-ex' or 'bridge_name'
+                # when it is 'bridge_name', it is autoconfigured and the
+                # default is 'br-ex'
+                # anything else is invalid
+                if ((bridge_name != 'br-ex') and
+                        ('bridge_name' not in str(bridge_name))):
+                    last_exception = (
+                        Exception('In case of ovs_bridge, bridge name must be '
+                                  'br-ex for auto-interface-group to work. If '
+                                  'not please create manual interface-group in '
+                                  'BCF.'))
                     continue
                 members = config.get('members')
                 for member in members:
                     # also check that type of bond for interface is supported
                     if member.get('type') not in SUPPORTED_BOND:
+                        last_exception = (
+                            Exception('Bond type for the interfaces under the '
+                                      'bridge is not supported. Please use one '
+                                      'of %(SUPPORTED_BOND)s' %
+                                      {'SUPPORTED_BOND': SUPPORTED_BOND}))
                         continue
                     # everythig checks out, return True
                     valid_bridge = True
                     break
+        if not valid_bridge:
+            raise last_exception
     except IOError as fileError:
         print("INVALID file passed as argument. \nERROR: %(error_string)s" %
               {'error_string': fileError})
