@@ -42,9 +42,6 @@ HorizonBsnBranch="$OpenStackBranch"
 mkdir horizon-bsn
 rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/horizon-bsn/centos7-x86_64/$HorizonBsnBranch/latest/* ./horizon-bsn
 
-# get extra package for horizon container build
-curl -O "http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/p/python-lockfile-0.9.1-4.el7.noarch.rpm"
-
 # get bosi packages
 mkdir bosi
 rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/bosi/$BcfBranch/latest/* ./bosi
@@ -58,9 +55,7 @@ mv ./bosi/rhosp_resources/$HorizonBsnBranch/yamls ./tarball
 mv ./bosi/bosi_offline_packages_*tar.gz ./tarball/bosi
 mv ./networking-bigswitch/*.noarch.rpm ./tarball
 mv ./horizon-bsn/*.noarch.rpm ./tarball
-mv ./horizon-bsn/*.sh ./tarball
 mv ./ivs/*.rpm ./tarball
-mv ./python-lockfile*.rpm ./tarball
 
 get_version () {
     RPM=$1;
