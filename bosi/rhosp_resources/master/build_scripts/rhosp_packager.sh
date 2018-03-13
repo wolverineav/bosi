@@ -35,6 +35,10 @@ rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/xenon-bsn/
 mkdir networking-bigswitch
 rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/networking-bigswitch/centos7-x86_64/$OpenStackBranch/latest/* ./networking-bigswitch
 
+# get python-bsn-neutronclient
+mkdir python-bsn-neutronclient
+rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/python-bsn-neutronclient/centos7-x86_64/origin/master/latest/* ./python-bsn-neutronclient
+
 # since we have special branching for networking-bigswitch, we need to sanitize it for horizon-bsn package
 HorizonBsnBranch="$OpenStackBranch"
 
@@ -51,12 +55,14 @@ rsync -e 'ssh -o "StrictHostKeyChecking no"' -uva  bigtop:public_html/bosi/$BcfB
 
 # grunt work aka packaging
 mkdir -p tarball/bosi
+mv ./bosi/rhosp_resources/$HorizonBsnBranch/container_customization/*.sh ./tarball
 mv ./bosi/rhosp_resources/$HorizonBsnBranch/ivs/customize.sh ./tarball
 mv ./bosi/rhosp_resources/$HorizonBsnBranch/ivs/README ./tarball
 mv ./bosi/rhosp_resources/$HorizonBsnBranch/ivs/startup.sh ./tarball
 mv ./bosi/rhosp_resources/$HorizonBsnBranch/yamls ./tarball
 mv ./bosi/bosi_offline_packages_*tar.gz ./tarball/bosi
 mv ./networking-bigswitch/*.noarch.rpm ./tarball
+mv ./python-bsn-neutronclient/*noarch.rpm ./tarball
 mv ./horizon-bsn/*.noarch.rpm ./tarball
 mv ./horizon-bsn/*.sh ./tarball
 mv ./ivs/*.rpm ./tarball
