@@ -64,7 +64,6 @@ mv ./bosi/bosi_offline_packages_*tar.gz ./tarball/bosi
 mv ./networking-bigswitch/*.noarch.rpm ./tarball
 mv ./python-bsn-neutronclient/*noarch.rpm ./tarball
 mv ./horizon-bsn/*.noarch.rpm ./tarball
-mv ./horizon-bsn/*.sh ./tarball
 mv ./ivs/*.rpm ./tarball
 mv ./python-lockfile*.rpm ./tarball
 
