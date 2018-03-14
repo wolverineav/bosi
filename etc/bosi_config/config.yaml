@@ -1,6 +1,6 @@
 # configuration won't be overrided by any openstack installer
 
-# mandatory, openstack release, supporting mitaka and newton
+# mandatory, openstack release, supporting newton, ocata and pike
 openstack_release: newton
 
 # mandatory, skip all nodes if true
@@ -8,10 +8,10 @@ default_skip: false
 
 # mandatory for p+v fabric, the Switch Light VX tar file
 ivs_packages:
-- /root/BCF-SL-VX-master-2016-03-09.tar.gz
+- /root/BCF-SL-VX-master-2018-02-09.tar.gz
 
 # mandatory, bcf version
-bcf_version: 4.2.0
+bcf_version: 4.6.0
 
 # mandatory, bcf controller ip:port
 bcf_controllers:
