@@ -737,7 +737,6 @@ class Helper(object):
                  'neutron_id': node.get_neutron_id(),
                  'selinux_mode': node.selinux_mode,
                  'br_int': const.BR_NAME_INT,
-                 'network_vlan_ranges': node.get_network_vlan_ranges(),
                  'br_mappings': node.get_bridge_mappings(),
                  'uname': node.uname,
                  'mtu': node.uplink_mtu,
