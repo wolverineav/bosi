@@ -209,12 +209,11 @@ class MetaEnum(EnumMeta):
         return item in cls.__members__
 
 
-class SriovBondMode(Enum):
+class BondMode(Enum):
     """
     This maps sriov bond mode to its corresponding MAC address to be used by
     the LLDP script as system-desc.
     """
     __metaclass__ = MetaEnum
-
     STATIC = '5c:16:c7:00:00:00'
     LACP = '5c:16:c7:00:00:04'

@@ -168,9 +168,11 @@ class Environment(object):
         self.role = config.get('default_role')
         self.user = config.get('default_user')
         # optional property, set default internally
-        self.sriov_bond_mode = const.SriovBondMode.STATIC
+        self.bond_mode = const.BondMode.STATIC
+        if fuel_cluster_id:
+            self.bond_mode = const.BondMode.LACP
         if config.get('default_sriov_bond_mode'):
-            self.sriov_bond_mode = const.SriovBondMode[
+            self.bond_mode = const.BondMode[
                 config.get('default_sriov_bond_mode').upper()]
         if rhosp:
             self.user = "heat-admin"

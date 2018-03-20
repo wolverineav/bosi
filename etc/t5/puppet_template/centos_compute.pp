@@ -36,7 +36,7 @@ Description=send lldp
 After=syslog.target network.target
 [Service]
 Type=simple
-ExecStart=/bin/send_lldp --system-desc 5c:16:c7:00:00:04 --system-name %(uname)s -i 10 --network_interface %(uplinks)s
+ExecStart=/bin/send_lldp --system-desc %(system_desc)s --system-name %(uname)s -i 10 --network_interface %(uplinks)s
 Restart=always
 StartLimitInterval=60s
 StartLimitBurst=3
