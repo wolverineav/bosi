@@ -395,7 +395,7 @@ class Helper(object):
                 'phy2_name': node.get_sriov_phy2_name(),
                 'phy2_nics': node.get_sriov_phy2_nics(),
                 'active_active': str(active_active).lower(),
-                'system_desc': node.bond_mode.value,
+                'system_desc': node.sriov_bond_mode.value,
             })
         bash_script_path = (
             r'''%(setup_node_dir)s/%(generated_script_dir)s'''
@@ -664,7 +664,6 @@ class Helper(object):
             is_controller = False
             if node.role == const.ROLE_NEUTRON_SERVER:
                 is_controller = True
-
             bash = (
                 bash_template %
                 {'install_ivs': str(node.install_ivs).lower(),
@@ -738,6 +737,7 @@ class Helper(object):
                  'neutron_id': node.get_neutron_id(),
                  'selinux_mode': node.selinux_mode,
                  'br_int': const.BR_NAME_INT,
+                 'network_vlan_ranges': node.get_network_vlan_ranges(),
                  'br_mappings': node.get_bridge_mappings(),
                  'uname': node.uname,
                  'mtu': node.uplink_mtu,
@@ -745,8 +745,7 @@ class Helper(object):
                  'keystone_auth_user': node.keystone_auth_user,
                  'keystone_password': node.keystone_password,
                  'keystone_auth_tenant': node.keystone_auth_tenant,
-                 'bond': node.bond,
-                 'system_desc': node.bond_mode.value,})
+                 'bond': node.bond})
         puppet_script_path = (
             r'''%(setup_node_dir)s/%(generated_script_dir)s/%(hostname)s.pp'''
             % {'setup_node_dir': node.setup_node_dir,
