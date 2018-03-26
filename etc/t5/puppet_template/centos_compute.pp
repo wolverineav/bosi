@@ -68,8 +68,7 @@ BONDING_OPTS='mode=4 lacp_rate=1 miimon=50 updelay=15000 xmit_hash_policy=1'
 ",
 }
 
-define bond_intf {
-    $uplink = split($name, ',')
+$uplinks.each |String $uplink| {
     file { "/etc/sysconfig/network-scripts/ifcfg-${uplink}":
         ensure  => file,
         content => "
@@ -82,9 +81,6 @@ MASTER=%(bond)s
 SLAVE=yes
 ",
     }
-}
-
-bond_intf { $uplinks:
 }
 
 # config /etc/neutron/neutron.conf
