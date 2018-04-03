@@ -1,6 +1,8 @@
 # configuration won't be overrided by any openstack installer
 
-# mandatory, openstack release, supporting newton, ocata and pike
+# mandatory, openstack release, example newton, ocata, pike and so on.
+# please check deployment guide for specific bcf_version and openstack
+# release compatibility matrix
 openstack_release: newton
 
 # mandatory, skip all nodes if true
