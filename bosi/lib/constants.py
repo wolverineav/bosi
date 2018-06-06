@@ -32,6 +32,7 @@ ROLE_CEPH = 'ceph-osd'
 ROLE_CINDER = "cinder"
 ROLE_MONGO = 'mongo'
 ROLE_SRIOV = 'sriov'
+ROLE_DPDK = 'dpdk'
 
 # deployment t6/t5
 T6 = 't6'
@@ -211,10 +212,10 @@ class MetaEnum(EnumMeta):
         return item in cls.__members__
 
 
-class SriovBondMode(Enum):
+class BondMode(Enum):
     """
-    This maps sriov bond mode to its corresponding MAC address to be used by
-    the LLDP script as system-desc.
+    This maps SRIOV/DPDK bond mode to its corresponding MAC address to be
+    used by the LLDP script as system-desc.
     """
     __metaclass__ = MetaEnum
 

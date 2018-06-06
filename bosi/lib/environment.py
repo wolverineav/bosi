@@ -26,7 +26,7 @@ from rest import RestLib
 class Environment(object):
     def __init__(self, config, mode, fuel_cluster_id, rhosp, tag,
                  cleanup, skip_ivs_version_check, certificate_dir,
-                 upgrade_dir, offline_dir, sriov):
+                 upgrade_dir, offline_dir, sriov, dpdk):
         # directory for upgrade
         self.upgrade_dir = None
         self.upgrade_pkgs = []
@@ -43,6 +43,9 @@ class Environment(object):
 
         # sriov for rhosp
         self.sriov = sriov
+
+        # dpdk for rhosp p-only
+        self.dpdk = dpdk
 
         # certificate directory
         self.certificate_dir = certificate_dir
@@ -116,7 +119,7 @@ class Environment(object):
             const.NETWORK_VLAN_RANGE_EXPRESSION, re.IGNORECASE)
         match = network_vlan_range_pattern.match(self.network_vlan_ranges)
         if not match:
-            Helper.safe_print("network_vlan_ranges' format is not correct.\n")
+            Helper.safe_print("network_vlan_ranges format is not correct.\n")
             exit(1)
         self.physnet = match.group(1)
         self.lower_vlan = match.group(2)
@@ -168,10 +171,10 @@ class Environment(object):
         self.role = config.get('default_role')
         self.user = config.get('default_user')
         # optional property, set default internally
-        self.sriov_bond_mode = const.SriovBondMode.STATIC
-        if config.get('default_sriov_bond_mode'):
-            self.sriov_bond_mode = const.SriovBondMode[
-                config.get('default_sriov_bond_mode').upper()]
+        self.bond_mode = const.BondMode.STATIC
+        if config.get('default_bond_mode'):
+            self.bond_mode = const.BondMode[
+                config.get('default_bond_mode').upper()]
         if rhosp:
             self.user = "heat-admin"
         elif fuel_cluster_id:
