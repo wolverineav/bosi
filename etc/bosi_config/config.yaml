@@ -73,7 +73,7 @@ default_uplink_interfaces:
 
 # optional, used in RHOSP SRIOV env.
 # legit options - static, lacp
-default_sriov_bond_mode: static
+default_bond_mode: static
 
 # list of nodes to be deployed
 nodes:
@@ -94,3 +94,10 @@ nodes:
     - p1p2
     bond_mode: lacp
 - hostname: 10.4.9.103
+  role: dpdk
+  physnets:
+  - phy_name: physnetdpdk
+    uplink_interfaces:
+    - p1p1
+    - p1p2
+- hostname: 10.4.9.104

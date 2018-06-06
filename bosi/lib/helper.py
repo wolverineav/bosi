@@ -387,15 +387,15 @@ class Helper(object):
                   "r") as bash_template_file:
             bash_template_content = bash_template_file.read()
 
-            active_active = False if len(node.sriov_physnets) == 2 else True
+            active_active = False if len(node.custom_physnets) == 2 else True
             bash = bash_template_content.format(**{
                 'fqdn': node.fqdn,
-                'phy1_name': node.get_sriov_phy1_name(),
-                'phy1_nics': node.get_sriov_phy1_nics(),
-                'phy2_name': node.get_sriov_phy2_name(),
-                'phy2_nics': node.get_sriov_phy2_nics(),
+                'phy1_name': node.get_custom_phy1_name(),
+                'phy1_nics': node.get_custom_phy1_nics(),
+                'phy2_name': node.get_custom_phy2_name(),
+                'phy2_nics': node.get_custom_phy2_nics(),
                 'active_active': str(active_active).lower(),
-                'system_desc': node.sriov_bond_mode.value,
+                'system_desc': node.bond_mode.value,
             })
         bash_script_path = (
             r'''%(setup_node_dir)s/%(generated_script_dir)s'''
@@ -412,6 +412,42 @@ class Helper(object):
     @staticmethod
     def generate_sriov_scripts_for_redhat(node):
         return Helper.generate_sriov_scripts(node, const.REDHAT)
+
+    @staticmethod
+    def generate_dpdk_scripts(node, bash_template):
+        with open((r'''%(setup_node_dir)s/%(deploy_mode)s/'''
+                   '''%(bash_template_dir)s/%(bash_template)s_'''
+                   '''%(os_version)s_dpdk.sh''' %
+                   {'setup_node_dir': node.setup_node_dir,
+                    'deploy_mode': node.deploy_mode,
+                    'bash_template_dir': const.BASH_TEMPLATE_DIR,
+                    'bash_template': bash_template,
+                    'os_version': node.os_version,
+                    'role': node.role}),
+                  "r") as bash_template_file:
+            bash_template_content = bash_template_file.read()
+
+            bash = bash_template_content.format(**{
+                'fqdn': node.fqdn,
+                'phy1_name': node.get_custom_phy1_name(),
+                'phy1_nics': node.get_custom_phy1_nics(),
+                'system_desc': node.bond_mode.value,
+            })
+        bash_script_path = (
+            r'''%(setup_node_dir)s/%(generated_script_dir)s'''
+            '''/%(hostname)s_dpdk.sh''' %
+            {'setup_node_dir': node.setup_node_dir,
+             'generated_script_dir': const.GENERATED_SCRIPT_DIR,
+             'hostname': node.hostname})
+        with open(bash_script_path, "w") as bash_file:
+            bash_file.write(bash)
+        node.set_bash_script_path(bash_script_path)
+
+        return
+
+    @staticmethod
+    def generate_dpdk_scripts_for_redhat(node):
+        return Helper.generate_dpdk_scripts(node, const.REDHAT)
 
     @staticmethod
     def generate_scripts_for_redhat(node):
@@ -892,9 +928,10 @@ class Helper(object):
         else:
             return None
         node_config['hostname'] = hostname
-        # In case of RHOSP, SRIOV nodes need to be explicitly specified
-        node_config['role'] = (const.ROLE_SRIOV
-                               if node_config['role'] == const.ROLE_SRIOV
+        # In case of RHOSP, SRIOV & DPDK nodes need to be explicitly specified
+        node_config['role'] = (node_config['role']
+                               if (node_config['role'] == const.ROLE_SRIOV or
+                                   node_config['role'] == const.ROLE_DPDK)
                                else role)
         node = Node(node_config, env)
         if node.skip:
@@ -1381,7 +1418,7 @@ class Helper(object):
                            'generated_script': const.GENERATED_SCRIPT_DIR},
                         shell=True)
 
-        if env.upgrade_dir or env.sriov:
+        if env.upgrade_dir or env.sriov or env.dpdk:
             # don't need other preparation for upgrade
             return
 
@@ -1711,6 +1748,15 @@ class Helper(object):
                 node, node.bash_script_path, node.dst_dir,
                 "%(hostname)s_sriov.sh" % {'hostname': node.hostname})
 
+            return
+
+        if node.role == const.ROLE_DPDK:
+            # copy dpdk script to node
+            safe_print("Copy bash script to %(hostname)s\n" %
+                       {'hostname': node.fqdn})
+            Helper.copy_file_to_remote(
+                node, node.bash_script_path, node.dst_dir,
+                "%(hostname)s_dpdk.sh" % {'hostname': node.hostname})
             return
 
         if node.offline_dir:

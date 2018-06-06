@@ -123,10 +123,10 @@ class Node(object):
         self.ivs_debug_pkg = None
         self.ivs_version = None
         self.old_ivs_version = node_config.get('old_ivs_version')
-        self.sriov_bond_mode = env.sriov_bond_mode
-        self.sriov_physnets = {}
+        self.bond_mode = env.bond_mode
+        self.custom_physnets = {}
 
-        # setup SRIOV physnets
+        # setup SRIOV custom_physnets
         if self.role == const.ROLE_SRIOV:
             if (not 'physnets' in node_config
                 or len(node_config['physnets']) < 1):
@@ -135,7 +135,7 @@ class Node(object):
                               '''%(hostname)s''' % {'hostname': self.hostname})
             if 'physnets' in node_config and len(node_config['physnets']) > 2:
                 self.skip = True
-                self.error = (r'''Cannot have more than two physents for '''
+                self.error = (r'''Cannot have more than two physnets for '''
                               '''SRIOV node %(hostname)s''' %
                               {'hostname': self.hostname})
             if not self.skip:
@@ -150,12 +150,37 @@ class Node(object):
                                       '''node %(hostname)s''' %
                                       {'hostname': self.hostname})
                         break
-                    self.sriov_physnets[phy['phy_name']] = \
+                    self.custom_physnets[phy['phy_name']] = \
                         phy['uplink_interfaces']
                     if 'bond_mode' in phy:
-                        self.sriov_bond_mode = const.SriovBondMode[
+                        self.bond_mode = const.BondMode[
                             phy['bond_mode'].upper()]
 
+        # setup DPDK custom_physnets
+        if self.role == const.ROLE_DPDK:
+            if (not 'physnets' in node_config
+                or len(node_config['physnets']) != 1):
+                self.skip = True
+                self.error = (r'''physnets not specified or more than one '''
+                              '''specified for DPDK node %(hostname)s'''
+                              % {'hostname': self.hostname})
+            if not self.skip:
+                for phy in node_config['physnets']:
+                    if ('phy_name' not in phy
+                        or 'uplink_interfaces' not in phy
+                        or len(phy['uplink_interfaces']) > 2):
+                        self.skip = True
+                        self.error = (r'''Either missing phy_name or '''
+                                      '''uplink_interfaces or more than 2 '''
+                                      '''uplink_interfaces found for SRIOV '''
+                                      '''node %(hostname)s''' %
+                                      {'hostname': self.hostname})
+                        break
+                    self.custom_physnets[phy['phy_name']] = \
+                        phy['uplink_interfaces']
+                    if 'bond_mode' in phy:
+                        self.bond_mode = const.BondMode[
+                            phy['bond_mode'].upper()]
 
         # in case of config env (packstack), bond and br_bond
         # may be empty
@@ -379,25 +404,25 @@ class Node(object):
     def get_bsnstacklib_version_upper(self):
         return self.bsnstacklib_version_upper
 
-    def get_sriov_phy1_name(self):
-        if len(self.sriov_physnets) < 1:
+    def get_custom_phy1_name(self):
+        if len(self.custom_physnets) < 1:
             return ''
-        return self.sriov_physnets.items()[0][0]
+        return self.custom_physnets.items()[0][0]
 
-    def get_sriov_phy1_nics(self):
-        if len(self.sriov_physnets) < 1:
+    def get_custom_phy1_nics(self):
+        if len(self.custom_physnets) < 1:
             return ''
-        return ','.join(self.sriov_physnets.items()[0][1])
+        return ','.join(self.custom_physnets.items()[0][1])
 
-    def get_sriov_phy2_name(self):
-        if len(self.sriov_physnets) < 2:
+    def get_custom_phy2_name(self):
+        if len(self.custom_physnets) < 2:
             return ''
-        return self.sriov_physnets.items()[1][0]
+        return self.custom_physnets.items()[1][0]
 
-    def get_sriov_phy2_nics(self):
-        if len(self.sriov_physnets) < 2:
+    def get_custom_phy2_nics(self):
+        if len(self.custom_physnets) < 2:
             return ''
-        return ','.join(self.sriov_physnets.items()[1][1])
+        return ','.join(self.custom_physnets.items()[1][1])
 
     def __str__(self):
         return (
@@ -486,84 +511,84 @@ class Node(object):
             ivs_version: %(ivs_version)s,
             old_ivs_version: %(old_ivs_version)s,
             error: %(error)s,
-            sriov_physnets: %(sriov_physnets)s,
-            sriov_bond_mode: %(sriov_bond_mode)s,
+            custom_physnets: %(custom_physnets)s,
+            bond_mode: %(bond_mode)s,
             ''' %
             {'dst_dir': self.dst_dir,
-            'bash_script_path': self.bash_script_path,
-            'puppet_script_path': self.puppet_script_path,
-            'selinux_script_path': self.selinux_script_path,
-            'ospurge_script_path': self.ospurge_script_path,
-            'dhcp_reschedule_script_path': self.dhcp_reschedule_script_path,
-            'dhcp_agent_scheduler_dir': self.dhcp_agent_scheduler_dir,
-            'log': self.log,
-            'hostname': self.hostname,
-            'fqdn': self.fqdn,
-            'uname': self.uname,
-            'mac': self.mac,
-            'role': self.role,
-            'skip': self.skip,
-            'deploy_mode': self.deploy_mode,
-            'os': self.os,
-            'os_version': self.os_version,
-            'user': self.user,
-            'passwd': self.passwd,
-            'uplink_interfaces': self.uplink_interfaces,
-            'uplink_mtu': self.uplink_mtu,
-            'install_ivs': self.install_ivs,
-            'install_bsnstacklib': self.install_bsnstacklib,
-            'install_all': self.install_all,
-            'deploy_dhcp_agent': self.deploy_dhcp_agent,
-            'deploy_l3_agent': self.deploy_l3_agent,
-            'bridges': str(self.bridges),
-            'br_bond': self.br_bond,
-            'bond': self.bond,
-            'pxe_interface': self.pxe_interface,
-            'br_fw_admin': self.br_fw_admin,
-            'br_fw_admin_address': self.br_fw_admin_address,
-            'tagged_intfs': self.tagged_intfs,
-            'ex_gw': self.ex_gw,
-            'tag': self.tag,
-            'env_tag': self.env_tag,
-            'pip_proxy': self.pip_proxy,
-            'certificate_dir': self.certificate_dir,
-            'upgrade_dir': self.upgrade_dir,
-            'upgrade_pkgs': self.upgrade_pkgs,
-            'offline_dir': self.offline_dir,
-            'offline_pkgs': self.offline_pkgs,
-            'cleanup': self.cleanup,
-            'rabbit_hosts': self.rabbit_hosts,
-            'keystone_auth_url': self.keystone_auth_url,
-            'keystone_auth_user': self.keystone_auth_user,
-            'keystone_password': self.keystone_password,
-            'keystone_auth_tenant': self.keystone_auth_tenant,
-            'time_diff': self.time_diff,
-            'last_log': self.last_log,
-            'rhosp_automate_register': self.rhosp_automate_register,
-            'rhosp_installer_management_interface':
+             'bash_script_path': self.bash_script_path,
+             'puppet_script_path': self.puppet_script_path,
+             'selinux_script_path': self.selinux_script_path,
+             'ospurge_script_path': self.ospurge_script_path,
+             'dhcp_reschedule_script_path': self.dhcp_reschedule_script_path,
+             'dhcp_agent_scheduler_dir': self.dhcp_agent_scheduler_dir,
+             'log': self.log,
+             'hostname': self.hostname,
+             'fqdn': self.fqdn,
+             'uname': self.uname,
+             'mac': self.mac,
+             'role': self.role,
+             'skip': self.skip,
+             'deploy_mode': self.deploy_mode,
+             'os': self.os,
+             'os_version': self.os_version,
+             'user': self.user,
+             'passwd': self.passwd,
+             'uplink_interfaces': self.uplink_interfaces,
+             'uplink_mtu': self.uplink_mtu,
+             'install_ivs': self.install_ivs,
+             'install_bsnstacklib': self.install_bsnstacklib,
+             'install_all': self.install_all,
+             'deploy_dhcp_agent': self.deploy_dhcp_agent,
+             'deploy_l3_agent': self.deploy_l3_agent,
+             'bridges': str(self.bridges),
+             'br_bond': self.br_bond,
+             'bond': self.bond,
+             'pxe_interface': self.pxe_interface,
+             'br_fw_admin': self.br_fw_admin,
+             'br_fw_admin_address': self.br_fw_admin_address,
+             'tagged_intfs': self.tagged_intfs,
+             'ex_gw': self.ex_gw,
+             'tag': self.tag,
+             'env_tag': self.env_tag,
+             'pip_proxy': self.pip_proxy,
+             'certificate_dir': self.certificate_dir,
+             'upgrade_dir': self.upgrade_dir,
+             'upgrade_pkgs': self.upgrade_pkgs,
+             'offline_dir': self.offline_dir,
+             'offline_pkgs': self.offline_pkgs,
+             'cleanup': self.cleanup,
+             'rabbit_hosts': self.rabbit_hosts,
+             'keystone_auth_url': self.keystone_auth_url,
+             'keystone_auth_user': self.keystone_auth_user,
+             'keystone_password': self.keystone_password,
+             'keystone_auth_tenant': self.keystone_auth_tenant,
+             'time_diff': self.time_diff,
+             'last_log': self.last_log,
+             'rhosp_automate_register': self.rhosp_automate_register,
+             'rhosp_installer_management_interface':
                 self.rhosp_installer_management_interface,
-            'rhosp_installer_pxe_interface':
+             'rhosp_installer_pxe_interface':
                 self.rhosp_installer_pxe_interface,
-            'rhosp_undercloud_dns': self.rhosp_undercloud_dns,
-            'rhosp_register_username': self.rhosp_register_username,
-            'rhosp_register_passwd': self.rhosp_register_passwd,
-            'installer_pxe_interface_ip': self.installer_pxe_interface_ip,
-            'neutron_id': self.neutron_id,
-            'tenant_api_version': self.tenant_api_version,
-            'openstack_release': self.openstack_release,
-            'bsnstacklib_version_lower': self.get_bsnstacklib_version_lower(),
-            'bsnstacklib_version_upper': self.get_bsnstacklib_version_upper(),
-            'bcf_version': self.bcf_version,
-            'bcf_controllers': self.bcf_controllers,
-            'bcf_controller_ips': self.bcf_controller_ips,
-            'bcf_controller_user': self.bcf_controller_user,
-            'bcf_controller_passwd': self.bcf_controller_passwd,
-            'bcf_openstack_management_tenant':
+             'rhosp_undercloud_dns': self.rhosp_undercloud_dns,
+             'rhosp_register_username': self.rhosp_register_username,
+             'rhosp_register_passwd': self.rhosp_register_passwd,
+             'installer_pxe_interface_ip': self.installer_pxe_interface_ip,
+             'neutron_id': self.neutron_id,
+             'tenant_api_version': self.tenant_api_version,
+             'openstack_release': self.openstack_release,
+             'bsnstacklib_version_lower': self.get_bsnstacklib_version_lower(),
+             'bsnstacklib_version_upper': self.get_bsnstacklib_version_upper(),
+             'bcf_version': self.bcf_version,
+             'bcf_controllers': self.bcf_controllers,
+             'bcf_controller_ips': self.bcf_controller_ips,
+             'bcf_controller_user': self.bcf_controller_user,
+             'bcf_controller_passwd': self.bcf_controller_passwd,
+             'bcf_openstack_management_tenant':
                 self.bcf_openstack_management_tenant,
-            'bcf_master': self.bcf_master,
-            'physnet': self.physnet,
-            'lower_vlan': self.lower_vlan,
-            'upper_vlan': self.upper_vlan,
+             'bcf_master': self.bcf_master,
+             'physnet': self.physnet,
+             'lower_vlan': self.lower_vlan,
+             'upper_vlan': self.upper_vlan,
             'setup_node_dir': self.setup_node_dir,
             'selinux_mode': self.selinux_mode,
             'fuel_cluster_id': self.fuel_cluster_id,
@@ -573,8 +598,8 @@ class Node(object):
             'ivs_version': self.ivs_version,
             'old_ivs_version': self.old_ivs_version,
             'error': self.error,
-            'sriov_physnets': self.sriov_physnets,
-            'sriov_bond_mode': self.sriov_bond_mode})
+            'custom_physnets': self.custom_physnets,
+            'bond_mode': self.bond_mode})
 
     def __repr__(self):
         return self.__str__()

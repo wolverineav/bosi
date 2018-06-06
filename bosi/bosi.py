@@ -63,6 +63,12 @@ def worker_upgrade_or_sriov_node(q):
                 {'dst_dir': node.dst_dir,
                  'hostname': node.hostname,
                  'log': node.log}))
+        elif node.role == const.ROLE_DPDK:
+            Helper.run_command_on_remote(node,
+                (r'''sudo bash %(dst_dir)s/%(hostname)s_dpdk.sh''' %
+                {'dst_dir': node.dst_dir,
+                 'hostname': node.hostname,
+                 'log': node.log}))
         else:
             Helper.run_command_on_remote(node,
                 (r'''sudo bash %(dst_dir)s/%(hostname)s_upgrade.sh''' %
@@ -285,15 +291,64 @@ def setup_sriov(node_dic):
               {'log': const.LOG_FILE})
 
 
+def setup_dpdk(node_dic):
+    for hostname, node in node_dic.iteritems():
+        if node.skip:
+            safe_print("skip node %(fqdn)s due to %(error)s\n" %
+                      {'fqdn': node.fqdn, 'error': node.error})
+            continue
+        if node.tag != node.env_tag:
+            safe_print("skip node %(fqdn)s due to mismatched tag\n" %
+                      {'fqdn': node.fqdn})
+            continue
+        if node.role != const.ROLE_DPDK:
+            safe_print("Skipping node %(hostname)s because deployment mode is "
+                       "DPDK and role set for node is not DPDK. It is "
+                       "%(role)s\n" %
+                       {'hostname': hostname, 'role': node.role})
+            continue
+        if node.os != const.REDHAT:
+            safe_print("Skipping node %(hostname)s because deployment mode is "
+                       "DPDK and non REDHAT OS is not supported. OS set for "
+                       "node is %(os)s\n" %
+                       {'hostname': hostname, 'os': node.os})
+            continue
+
+        # all okay, generate scripts for node
+        Helper.generate_dpdk_scripts_for_redhat(node)
+        node_q.put(node)
+
+    with open(const.LOG_FILE, "a") as log_file:
+        for hostname, node in node_dic.iteritems():
+            log_file.write(str(node))
+
+    # Use multiple threads to setup nodes
+    for i in range(const.MAX_WORKERS):
+        t = threading.Thread(target=worker_upgrade_or_sriov_node, args=(node_q,))
+        t.daemon = True
+        t.start()
+    node_q.join()
+
+    sorted_time_dict = OrderedDict(sorted(time_dict.items(),
+                                          key=lambda x: x[1]))
+    for fqdn, h_time in sorted_time_dict.items():
+        safe_print("node: %(fqdn)s, time: %(time).2f\n" %
+                   {'fqdn': fqdn, 'time': h_time})
+
+    safe_print("Big Cloud Fabric deployment finished! "
+               "Check %(log)s on each node for details.\n" %
+              {'log': const.LOG_FILE})
+
+
 def deploy_bcf(config, mode, fuel_cluster_id, rhosp, tag, cleanup,
                verify, verify_only, skip_ivs_version_check,
                certificate_dir, certificate_only, generate_csr,
-               support, upgrade_dir, offline_dir, sriov):
+               support, upgrade_dir, offline_dir, sriov, dpdk):
     # Deploy setup node
     safe_print("Start to prepare setup node\n")
     env = Environment(config, mode, fuel_cluster_id, rhosp, tag, cleanup,
                       skip_ivs_version_check, certificate_dir, upgrade_dir,
-                      offline_dir, sriov)
+                      offline_dir, sriov, dpdk)
     Helper.common_setup_node_preparation(env)
     controller_nodes = []
 
@@ -307,6 +362,9 @@ def deploy_bcf(config, mode, fuel_cluster_id, rhosp, tag, cleanup,
 
     if sriov:
         return setup_sriov(node_dic)
+
+    if dpdk:
+        return setup_dpdk(node_dic)
 
     if generate_csr:
         safe_print("Start to generate csr for virtual switches.\n")
@@ -514,17 +572,27 @@ def main():
                         help=("Deploy changes necessary for SRIOV mode to "
                               "nodes specified in config.yaml. Only works "
                               "with RHOSP."))
+    parser.add_argument('--dpdk', action='store_true', default=False,
+                        help=("Deploy changes necessary for DPDK mode to "
+                              "nodes specified in config.yaml. Only works "
+                              "with RHOSP in pfabric mode."))
 
 
     args = parser.parse_args()
     if args.fuel_cluster_id and args.rhosp:
         safe_print("Cannot have both fuel and rhosp as openstack installer.\n")
         return
-    if args.rhosp and not (args.upgrade_dir or args.sriov):
+    if args.rhosp and not (args.upgrade_dir or args.sriov or args.dpdk):
         safe_print("BOSI for RHOSP only supports upgrading packages or "
-                   "SRIOV deployment.\n"
-                   "Please specify --upgrade-dir or --sriov.\n")
+                   "SRIOV/DPDK deployment.\n"
+                   "Please specify --upgrade-dir or --sriov or --dpdk.\n")
         return
+    if args.rhosp and args.dpdk:
+        if args.deploy_mode != 'pfabric':
+            safe_print("BOSI for RHOSP DPDK is only supported in pfabric "
+                       "mode. \n"
+                       "Please change deployment mode to pfabric.")
+            return
     if args.offline_dir and args.upgrade_dir:
         safe_print("Cannot have both --offline-dir and --upgrade-dir. Please specify one.")
         return
@@ -543,7 +611,7 @@ def main():
                args.skip_ivs_version_check,
                args.certificate_dir, args.certificate_only,
                args.generate_csr, args.support,
-               args.upgrade_dir, args.offline_dir, args.sriov)
+               args.upgrade_dir, args.offline_dir, args.sriov, args.dpdk)
 
 
 if __name__ == '__main__':
