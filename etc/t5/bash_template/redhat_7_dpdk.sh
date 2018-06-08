@@ -16,6 +16,7 @@
 
 # env variables to be supplied by BOSI
 fqdn={fqdn}
+is_controller={is_controller}
 phy1_name={phy1_name}
 phy1_nics={phy1_nics}
 system_desc={system_desc}
@@ -25,7 +26,13 @@ SERVICE_FILE_1='/usr/lib/systemd/system/send_lldp.service'
 SERVICE_FILE_MULTI_USER_1='/etc/systemd/system/multi-user.target.wants/send_lldp.service'
 
 # new vars with evaluated results
-HOSTNAME=`cat /etc/hostname`
+HOSTNAME=`hostname -f`
+
+# system name for LLDP depends on whether its a controller or compute node
+SYSTEMNAME=${{HOSTNAME}}-${{phy1_name}}
+if [[ $is_controller == true ]]; then
+    SYSTEMNAME=${{HOSTNAME}}
+fi
 
 # Make sure only root can run this script
 if [ "$(id -u)" != "0" ]; then
@@ -47,7 +54,7 @@ After=syslog.target network.target
 Type=simple
 ExecStart=/bin/python /usr/lib/python2.7/site-packages/networking_bigswitch/bsnlldp/send_lldp.py \
     --system-desc ${{system_desc}} \
-    --system-name ${{HOSTNAME}}-${{phy1_name}} \
+    --system-name ${{SYSTEMNAME}} \
     -i 10 \
     --network_interface ${{phy1_nics}} \
     --sriov
