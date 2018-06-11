@@ -1,0 +1,7 @@
+# override the following containers to include BSN changes to the containers
+
+parameter_defaults:
+  DockerHorizonConfigImage: 192.0.2.1:8787/rhosp12/openstack-horizon-bigswitch:12.0.1
+  DockerHorizonImage: 192.0.2.1:8787/rhosp12/openstack-horizon-bigswitch:12.0.1
+  DockerNovaComputeImage: 192.0.2.1:8787/rhosp12/openstack-nova-compute-bigswitch:12.0.1
+  DockerNovaLibvirtConfigImage: 192.0.2.1:8787/rhosp12/openstack-nova-compute-bigswitch:12.0.1
