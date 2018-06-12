@@ -427,8 +427,13 @@ class Helper(object):
                   "r") as bash_template_file:
             bash_template_content = bash_template_file.read()
 
+            is_controller = False
+            if node.role == const.ROLE_DPDK_CONTROL:
+                is_controller = True
+
             bash = bash_template_content.format(**{
                 'fqdn': node.fqdn,
+                'is_controller': str(is_controller).lower(),
                 'phy1_name': node.get_custom_phy1_name(),
                 'phy1_nics': node.get_custom_phy1_nics(),
                 'system_desc': node.bond_mode.value,
@@ -929,10 +934,19 @@ class Helper(object):
             return None
         node_config['hostname'] = hostname
         # In case of RHOSP, SRIOV & DPDK nodes need to be explicitly specified
-        node_config['role'] = (node_config['role']
-                               if (node_config['role'] == const.ROLE_SRIOV or
-                                   node_config['role'] == const.ROLE_DPDK)
-                               else role)
+        if node_config['role']:
+            if node_config['role'] == const.ROLE_DPDK:
+                # For DPDK nodes, consider their original roles and assign a
+                # specific DPDK subrole based on that.
+                if role == const.ROLE_COMPUTE:
+                    node_config['role'] = const.ROLE_DPDK_COMPUTE
+                elif role == const.ROLE_NEUTRON_SERVER:
+                    node_config['role'] = const.ROLE_DPDK_CONTROL
+            elif node_config['role'] == const.ROLE_SRIOV:
+                node_config['role'] = const.ROLE_SRIOV
+            else:
+                node_config['role'] = role
+
         node = Node(node_config, env)
         if node.skip:
             safe_print("Skipping node %(hostname)s because %(error_msg)s.\n" %
@@ -1750,7 +1764,7 @@ class Helper(object):
 
             return
 
-        if node.role == const.ROLE_DPDK:
+        if node.role in const.DPDK_ROLES:
             # copy dpdk script to node
             safe_print("Copy bash script to %(hostname)s\n" %
                        {'hostname': node.fqdn})

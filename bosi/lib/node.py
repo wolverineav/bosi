@@ -157,7 +157,7 @@ class Node(object):
                             phy['bond_mode'].upper()]
 
         # setup DPDK custom_physnets
-        if self.role == const.ROLE_DPDK:
+        if self.role in const.DPDK_ROLES:
             if (not 'physnets' in node_config
                 or len(node_config['physnets']) != 1):
                 self.skip = True

@@ -63,7 +63,7 @@ def worker_upgrade_or_sriov_node(q):
                 {'dst_dir': node.dst_dir,
                  'hostname': node.hostname,
                  'log': node.log}))
-        elif node.role == const.ROLE_DPDK:
+        elif node.role in const.DPDK_ROLES:
             Helper.run_command_on_remote(node,
                 (r'''sudo bash %(dst_dir)s/%(hostname)s_dpdk.sh''' %
                 {'dst_dir': node.dst_dir,
@@ -301,7 +301,7 @@ def setup_dpdk(node_dic):
             safe_print("skip node %(fqdn)s due to mismatched tag\n" %
                       {'fqdn': node.fqdn})
             continue
-        if node.role != const.ROLE_DPDK:
+        if node.role not in const.DPDK_ROLES:
             safe_print("Skipping node %(hostname)s because deployment mode is "
                        "DPDK and role set for node is not DPDK. It is "
                        "%(role)s\n" %

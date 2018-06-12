@@ -32,7 +32,10 @@ ROLE_CEPH = 'ceph-osd'
 ROLE_CINDER = "cinder"
 ROLE_MONGO = 'mongo'
 ROLE_SRIOV = 'sriov'
-ROLE_DPDK = 'dpdk'
+ROLE_DPDK = 'ovs-dpdk'
+ROLE_DPDK_CONTROL = 'ovs-dpdk-controller'
+ROLE_DPDK_COMPUTE = 'ovs-dpdk-compute'
+DPDK_ROLES = [ROLE_DPDK, ROLE_DPDK_CONTROL, ROLE_DPDK_COMPUTE]
 
 # deployment t6/t5
 T6 = 't6'

@@ -94,7 +94,7 @@ nodes:
     - p1p2
     bond_mode: lacp
 - hostname: 10.4.9.103
-  role: dpdk
+  role: ovs-dpdk
   physnets:
   - phy_name: physnetdpdk
     uplink_interfaces:
