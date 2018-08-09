@@ -26,14 +26,11 @@ contains the Big Switch switch light virtual
 ivs-debuginfo-${ivs_version}.el7.centos.x86_64.rpm
 contains the Big Switch switch light virtual debugging tools
 
-ifup-ivs
-is the script to bring up interfaces on switch light virtual
+customize.sh
+is the script to customize overcloud ISO image, adding BSN packages
 
-ifdown-ivs
-is the script to bring down interfaces on switch light virtual
-
-assign-ivs-ip
-is the script to assign ip address to interfaces on switch light virtual
+RUNME.sh
+is the script to finalize customize.sh and startup.sh with version numbers
 
 startup.sh
 is the script needs to be run on undercloud node first boot
