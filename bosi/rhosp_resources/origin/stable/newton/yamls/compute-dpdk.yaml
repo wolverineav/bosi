@@ -38,13 +38,26 @@ parameters:
     description: The ovs_options string for the bond interface. Set things like
                  lacp=active and/or bond_mode=balance-slb using this option.
     type: string
+    constraints:
+      - allowed_pattern: "^((?!balance.tcp).)*$"
+        description: |
+          The balance-tcp bond mode is known to cause packet loss and
+          should not be used in BondInterfaceOvsOptions.
+  ExternalNetworkVlanID:
+    default: 10
+    description: Vlan ID for the external network traffic.
+    type: number
   InternalApiNetworkVlanID:
-    default: 20 
+    default: 20
     description: Vlan ID for the internal_api network traffic.
     type: number
   StorageNetworkVlanID:
     default: 30
     description: Vlan ID for the storage network traffic.
+    type: number
+  StorageMgmtNetworkVlanID:
+    default: 40
+    description: Vlan ID for the storage mgmt network traffic.
     type: number
   TenantNetworkVlanID:
     default: 50
@@ -60,6 +73,14 @@ parameters:
     type: string
   ControlPlaneDefaultRoute: # Override this via parameter_defaults
     description: The default route of the control plane network.
+    type: string
+  ExternalInterfaceDefaultRoute: # Not used by default in this template
+    default: '10.0.0.1'
+    description: The default route of the external network.
+    type: string
+  ManagementInterfaceDefaultRoute: # Commented out by default in this template
+    default: unset
+    description: The default route of the management network.
     type: string
   DnsServers: # Override this via parameter_defaults
     default: []
@@ -97,40 +118,79 @@ resources:
                   default: true
                   next_hop: {get_param: ControlPlaneDefaultRoute}
             -
-              type: nfvswitch_bridge
-              options: "-c 2-5 --physnet nfvphysnet"
+              type: linux_bond
+              name: bond_api
+              bonding_options: "mode=4 lacp_rate=1 updelay=1000 miimon=100"
+              use_dhcp: false
               members:
                 -
                   type: interface
-                  name: <Update-this-value, e.g. p1p1 or enp129s0f0>
+                  name: <Update-this-value, e.g. nic3 or em3>
+                  primary: true
                 -
                   type: interface
-                  name: <Update-this-value, e.g. p1p2 or enp129s0f1>
+                  name: <Update-this-value, e.g. nic4 or em4>
             -
-              type: ivs_bridge
+              type: vlan
+              vlan_id: {get_param: InternalApiNetworkVlanID}
+              device: bond_api
+              addresses:
+                -
+                  ip_netmask: {get_param: InternalApiIpSubnet}
+            -
+              type: vlan
+              vlan_id: {get_param: StorageNetworkVlanID}
+              device: bond_api
+              addresses:
+                -
+                  ip_netmask: {get_param: StorageIpSubnet}
+            -
+              type: vlan
+              vlan_id: {get_param: TenantNetworkVlanID}
+              device: bond_api
+              addresses:
+                -
+                  ip_netmask: {get_param: TenantIpSubnet}
+            -
+              type: ovs_user_bridge
+              name: br-link
+              use_dhcp: false
               members:
                 -
-                  type: interface
-                  name: <Update-this-value, e.g. nic2 or p1p1>
-                -
-                  type: interface
-                  name: <Update-this-value, e.g. nic3 or p1p2>
-                -
-                  type: ivs_interface
-                  name: api
-                  vlan_id: {get_param: InternalApiNetworkVlanID}
-                  addresses:
+                  type: ovs_dpdk_bond
+                  name: dpdkbond0
+                  members:
                     -
-                      ip_netmask: {get_param: InternalApiIpSubnet}
-                -
-                  type: ivs_interface
-                  name: storage
-                  vlan_id: {get_param: StorageNetworkVlanID}
-                  addresses:
+                      type: ovs_dpdk_port
+                      name: dpdk0
+                      members:
+                        -
+                          type: interface
+                          name: <Update-this-value, e.g. nic5 or em5>
                     -
-                      ip_netmask: {get_param: StorageIpSubnet}
+                      type: ovs_dpdk_port
+                      name: dpdk1
+                      members:
+                        -
+                          type: interface
+                          name: <Update-this-value, e.g. nic6 or em6>
+                # Uncomment when including environments/network-management.yaml
+                # If setting default route on the Management interface, comment
+                # out the default route on the Control Plane.
+                #-
+                #  type: vlan
+                #  device: bond1
+                #  vlan_id: {get_param: ManagementNetworkVlanID}
+                #  addresses:
+                #    -
+                #      ip_netmask: {get_param: ManagementIpSubnet}
+                #  routes:
+                #    -
+                #      default: true
+                #      next_hop: {get_param: ManagementInterfaceDefaultRoute}
 
 outputs:
   OS::stack_id:
     description: The OsNetConfigImpl resource.
     value: {get_resource: OsNetConfigImpl}
+
