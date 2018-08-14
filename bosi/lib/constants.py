@@ -74,6 +74,9 @@ OS_BCF_MAPPING_LOWER = {
     },
     'pike': {
         '4.7': '11.47'
+    },
+    'queens': {
+        '4.7': '12.0'
     }
 }
 
@@ -110,6 +113,9 @@ OS_BCF_MAPPING_UPPER = {
     },
     'pike' : {
         '4.7': '11.48'
+    },
+    'queens': {
+        '4.7': '12.1'
     }
 }
 
