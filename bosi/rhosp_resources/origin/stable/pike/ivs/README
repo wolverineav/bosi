@@ -29,8 +29,5 @@ contains the Big Switch switch light virtual debugging tools
 customize.sh
 is the script to customize overcloud ISO image, adding BSN packages
 
-RUNME.sh
-is the script to finalize customize.sh and startup.sh with version numbers
-
 startup.sh
 is the script needs to be run on undercloud node first boot

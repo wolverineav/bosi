@@ -1,0 +1,6 @@
+# upload BSN container from upstream registry to local registry
+# REGISTRY_IP is the IP configured as local_ip in undercloud.conf
+
+container_images:
+- imagename: registry.connect.redhat.com/bigswitch/rhosp13-openstack-neutron-server-bigswitch:13.0-1
+  push_destination: <REGISTRY_IP>:8787
