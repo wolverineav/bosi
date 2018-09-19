@@ -4,3 +4,5 @@
 container_images:
 - imagename: registry.connect.redhat.com/bigswitch/rhosp13-openstack-neutron-server-bigswitch:13.0-1
   push_destination: <REGISTRY_IP>:8787
+- imagename: registry.connect.redhat.com/bigswitch/rhosp13-openstack-horizon-bigswitch:13.0-2
+  push_destination: <REGISTRY_IP>:8787
