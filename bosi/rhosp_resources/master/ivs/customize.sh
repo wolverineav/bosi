@@ -18,7 +18,7 @@ export LIBGUESTFS_BACKEND=direct
 
 image_dir="/home/stack/images"
 
-virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload neutron-bsn-lldp-0.0.1-1.el7.centos.noarch.rpm:/root/
+virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload neutron-bsn-lldp-${lldp_version}-1.el7.centos.noarch.rpm:/root/
 virt-customize -a ${image_dir}/overcloud-full.qcow2 --firstboot startup.sh
 # enabled for P+V mode
 #virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload ivs-${ivs_version}.el7.centos.x86_64.rpm:/root/
