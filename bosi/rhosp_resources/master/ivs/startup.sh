@@ -20,7 +20,7 @@ yum remove -y openstack-neutron-bigswitch-lldp
 yum remove -y python-networking-bigswitch
 
 yum remove -y neutron-bsn-lldp
-rpm -ivhU --force /root/neutron-bsn-lldp-0.0.1-1.el7.centos.noarch.rpm
+rpm -ivhU --force /root/neutron-bsn-lldp-${lldp_version}-1.el7.centos.noarch.rpm
 # enabled for P+V mode
 #rpm -ivhU --force /root/ivs-${ivs_version}.el7.centos.x86_64.rpm
 #rpm -ivhU --force /root/ivs-debuginfo-${ivs_version}.el7.centos.x86_64.rpm
