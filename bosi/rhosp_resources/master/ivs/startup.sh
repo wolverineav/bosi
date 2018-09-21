@@ -26,3 +26,6 @@ rpm -ivhU --force /root/neutron-bsn-lldp-${lldp_version}-1.el7.centos.noarch.rpm
 #rpm -ivhU --force /root/ivs-debuginfo-${ivs_version}.el7.centos.x86_64.rpm
 systemctl enable neutron-bsn-lldp.service
 systemctl restart neutron-bsn-lldp.service
+# workaround for ivs restart not happening
+rpm -qa | grep os-net-config
+cp /root/impl_ifcfg.py /usr/lib/python2.7/site-packages/os_net_config/impl_ifcfg.py
