@@ -1,18 +1,10 @@
-heat_template_version: ocata
+heat_template_version: queens
 description: >
-  Software Config to drive os-net-config with 2 bonded nics on a bridge with VLANs attached for the controller role.
+  Software Config to drive os-net-config with 2 bonded nics on a bridge with VLANs attached for the Controller role.
 parameters:
   ControlPlaneIp:
     default: ''
     description: IP address/subnet on the ctlplane network
-    type: string
-  ExternalIpSubnet:
-    default: ''
-    description: IP address/subnet on the external network
-    type: string
-  InternalApiIpSubnet:
-    default: ''
-    description: IP address/subnet on the internal API network
     type: string
   StorageIpSubnet:
     default: ''
@@ -20,47 +12,49 @@ parameters:
     type: string
   StorageMgmtIpSubnet:
     default: ''
-    description: IP address/subnet on the storage mgmt network
+    description: IP address/subnet on the storage_mgmt network
+    type: string
+  InternalApiIpSubnet:
+    default: ''
+    description: IP address/subnet on the internal_api network
     type: string
   TenantIpSubnet:
     default: ''
     description: IP address/subnet on the tenant network
     type: string
-  ManagementIpSubnet: # Only populated when including environments/network-management.yaml
+  ExternalIpSubnet:
+    default: ''
+    description: IP address/subnet on the external network
+    type: string
+  ManagementIpSubnet:
     default: ''
     description: IP address/subnet on the management network
     type: string
   BondInterfaceOvsOptions:
     default: bond_mode=active-backup
-    description: The ovs_options string for the bond interface. Set things like lacp=active and/or bond_mode=balance-slb using
-      this option.
+    description: 'The ovs_options or bonding_options string for the bond
+      interface. Set things like lacp=active and/or bond_mode=balance-slb
+      for OVS bonds or like mode=4 for Linux bonds using this option.'
     type: string
-    constraints:
-    - allowed_pattern: ^((?!balance.tcp).)*$
-      description: 'The balance-tcp bond mode is known to cause packet loss and
-
-        should not be used in BondInterfaceOvsOptions.
-
-        '
-  ExternalNetworkVlanID:
-    default: 10
-    description: Vlan ID for the external network traffic.
-    type: number
-  InternalApiNetworkVlanID:
-    default: 20
-    description: Vlan ID for the internal_api network traffic.
-    type: number
   StorageNetworkVlanID:
     default: 30
     description: Vlan ID for the storage network traffic.
     type: number
   StorageMgmtNetworkVlanID:
     default: 40
-    description: Vlan ID for the storage mgmt network traffic.
+    description: Vlan ID for the storage_mgmt network traffic.
+    type: number
+  InternalApiNetworkVlanID:
+    default: 20
+    description: Vlan ID for the internal_api network traffic.
     type: number
   TenantNetworkVlanID:
     default: 50
     description: Vlan ID for the tenant network traffic.
+    type: number
+  ExternalNetworkVlanID:
+    default: 10
+    description: Vlan ID for the external network traffic.
     type: number
   ManagementNetworkVlanID:
     default: 60
@@ -70,12 +64,8 @@ parameters:
     description: The default route of the control plane network.
     type: string
   ExternalInterfaceDefaultRoute:
-    default: 10.0.0.1
+    default: '10.0.0.1'
     description: default route for the external network
-    type: string
-  ManagementInterfaceDefaultRoute: # Commented out by default in this template
-    default: unset
-    description: The default route of the management network.
     type: string
   ControlPlaneSubnetCidr: # Override this via parameter_defaults
     default: '24'
@@ -96,7 +86,7 @@ resources:
       config:
         str_replace:
           template:
-            get_file: ../../scripts/run-os-net-config.sh
+            get_file: /usr/share/openstack-tripleo-heat-templates/network/scripts/run-os-net-config.sh
           params:
             $network_config:
               network_config:
@@ -174,8 +164,7 @@ resources:
                 # If setting default route on the Management interface, comment
                 # out the default route on the External interface. This will
                 # make the External API unreachable from remote subnets.
-                #-
-                #  type: vlan
+                #- type: vlan
                 #  device: bond1
                 #  vlan_id: {get_param: ManagementNetworkVlanID}
                 #  addresses:
@@ -190,4 +179,3 @@ outputs:
     description: The OsNetConfigImpl resource.
     value:
       get_resource: OsNetConfigImpl
-
