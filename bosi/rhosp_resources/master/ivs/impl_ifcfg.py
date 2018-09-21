@@ -1157,6 +1157,9 @@ class IfcfgNetConfig(os_net_config.NetConfig):
                     self.ifup(ivs_uplink)
                 for ivs_interface in ivs_interfaces:
                     self.ifup(ivs_interface)
+                msg = "Restart ivs"
+                self.execute(msg, '/usr/bin/systemctl',
+                             'restart', 'ivs')
 
             if nfvswitch_interfaces or nfvswitch_internal_ifaces:
                 logger.info("Attach to nfvswitch with "
@@ -1167,9 +1170,9 @@ class IfcfgNetConfig(os_net_config.NetConfig):
                     self.ifup(nfvswitch_interface)
                 for nfvswitch_internal in nfvswitch_internal_ifaces:
                     self.ifup(nfvswitch_internal)
-                msg = "Restart ivs"
+                msg = "Restart nfvswitch"
                 self.execute(msg, '/usr/bin/systemctl',
-                             'restart', 'ivs')
+                             'restart', 'nfvswitch')
 
             for vlan in restart_vlans:
                 self.ifup(vlan)
