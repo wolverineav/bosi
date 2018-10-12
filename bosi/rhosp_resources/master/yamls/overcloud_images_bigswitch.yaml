@@ -2,11 +2,10 @@
 # REGISTRY_IP is the IP configured as local_ip in undercloud.conf
 
 parameter_defaults:
-  DockerNeutronApiImage: <REGISTRY_IP>:8787/bigswitch/rhosp13-openstack-neutron-server-bigswitch:13.0-1
-  DockerNeutronConfigImage: <REGISTRY_IP>:8787/bigswitch/rhosp13-openstack-neutron-server-bigswitch:13.0-1
-# uncomment once Horizon plugin works fine
-#  DockerHorizonImage: <REGISTRY_IP>:8787/bigswitch/rhosp13-openstack-horizon-bigswitch:13.0-2
-#  DockerHorizonConfigImage: <REGISTRY_IP>:8787/bigswitch/rhosp13-openstack-horizon-bigswitch:13.0-2
+  DockerNeutronApiImage: <REGISTRY_IP>:8787/bigswitch/rhosp13-openstack-neutron-server-bigswitch:13.0-2
+  DockerNeutronConfigImage: <REGISTRY_IP>:8787/bigswitch/rhosp13-openstack-neutron-server-bigswitch:13.0-2
+  DockerHorizonImage: <REGISTRY_IP>:8787/bigswitch/rhosp13-openstack-horizon-bigswitch:13.0-3
+  DockerHorizonConfigImage: <REGISTRY_IP>:8787/bigswitch/rhosp13-openstack-horizon-bigswitch:13.0-3
 # uncomment for PV mode  
 #  DockerNeutronBigswitchAgentImage: <REGISTRY_IP>:8787/bigswitch/rhosp13-openstack-neutron-server-bigswitch:13.0-1
 #  DockerNovaComputeImage: <REGISTRY_IP>:8787/bigswitch/rhosp13-openstack-nova-compute-bigswitch:13.0-2
