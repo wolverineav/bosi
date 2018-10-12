@@ -19,6 +19,9 @@ is_controller=%(is_controller)s
 controller() {
 
     PKGS=/tmp/upgrade/*
+
+    # the first four packages are applicable for RHOSP releases upto Pike
+    # i.e. RHOSP 12
     for pkg in $PKGS
     do
         if [[ $pkg == *"python-networking-bigswitch"* ]]; then
@@ -64,12 +67,26 @@ controller() {
             break
         fi
     done
-
+    # Following packages are applicable for Queens release i.e. RHOSP 13
+    # and above
+    for pkg in $PKGS
+    do
+        if [[ $pkg == *"neutron-bsn-lldp"* ]]; then
+            yum remove -y neutron-bsn-lldp
+            rpm -ivhU $pkg --force
+            systemctl daemon-reload
+            systemctl enable  neutron-bsn-lldp
+            systemctl restart neutron-bsn-lldp
+            break
+        fi
+    done
 }
 
 compute() {
 
     PKGS=/tmp/upgrade/*
+    # First 3 packages are applicable for openstack releases until Pike
+    # i.e. RHOSP 12 and below
     for pkg in $PKGS
     do
         if [[ $pkg == *"python-networking-bigswitch"* ]]; then
@@ -98,6 +115,19 @@ compute() {
             rpm -ivhU $pkg --force
             systemctl daemon-reload
             systemctl enable neutron-bsn-lldp
+            systemctl restart neutron-bsn-lldp
+            break
+        fi
+    done
+    # Following package is applicable for Queens release i.e. RHOSP 13
+    # and above
+    for pkg in $PKGS
+    do
+        if [[ $pkg == *"neutron-bsn-lldp"* ]]; then
+            yum remove -y neutron-bsn-lldp
+            rpm -ivhU $pkg --force
+            systemctl daemon-reload
+            systemctl enable  neutron-bsn-lldp
             systemctl restart neutron-bsn-lldp
             break
         fi
