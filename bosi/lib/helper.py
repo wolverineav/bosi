@@ -1306,7 +1306,7 @@ class Helper(object):
                            % {'instance_uuid': instance_uuid})
                 continue
 
-            # get role from ironic node-show
+            # get role from openstack baremetal node show
             # sample output:
             # node_info = "
             #     +------------+------------------------------------------------------------------------+
@@ -1315,8 +1315,8 @@ class Helper(object):
             #     | properties | {u'memory_mb': u'32768', u'cpu_arch': u'x86_64', u'local_gb': u'464',  |
             #     |            | u'cpus': u'12', u'capabilities': u'profile:control,boot_option:local'} |
             #     +------------+------------------------------------------------------------------------+"
-            cmd = (r'''source %(stackrc)s; ironic node-show \
-                       --instance %(instance_uuid)s --fields properties'''
+            cmd = (r'''source %(stackrc)s; openstack baremetal node show \
+                       %(instance_uuid)s --fields properties'''
                    % {'stackrc': const.RHOSP_UNDERCLOUD_OPENRC,
                       'instance_uuid': instance_uuid})
             node_info, errors = \
