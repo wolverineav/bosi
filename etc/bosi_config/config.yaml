@@ -3,7 +3,7 @@
 # mandatory, openstack release, example newton, ocata, pike and so on.
 # please check deployment guide for specific bcf_version and openstack
 # release compatibility matrix
-openstack_release: newton
+openstack_release: queens
 
 # mandatory, skip all nodes if true
 default_skip: false
@@ -13,7 +13,7 @@ ivs_packages:
 - /root/BCF-SL-VX-master-2018-02-09.tar.gz
 
 # mandatory, bcf version
-bcf_version: 4.6.0
+bcf_version: 4.7.0
 
 # mandatory, bcf controller ip:port
 bcf_controllers:
