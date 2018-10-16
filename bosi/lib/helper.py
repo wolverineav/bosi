@@ -1316,7 +1316,7 @@ class Helper(object):
             #     |            | u'cpus': u'12', u'capabilities': u'profile:control,boot_option:local'} |
             #     +------------+------------------------------------------------------------------------+"
             cmd = (r'''source %(stackrc)s; openstack baremetal node show \
-                       %(instance_uuid)s --fields properties'''
+                       --instance %(instance_uuid)s --fields properties'''
                    % {'stackrc': const.RHOSP_UNDERCLOUD_OPENRC,
                       'instance_uuid': instance_uuid})
             node_info, errors = \
