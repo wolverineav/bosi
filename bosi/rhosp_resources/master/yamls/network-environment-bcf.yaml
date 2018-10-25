@@ -48,6 +48,6 @@ parameter_defaults:
   # Set to empty string to enable multiple external networks or VLANs
   NeutronExternalNetworkBridge: "''"
   # Customize bonding options, e.g. "mode=4 lacp_rate=1 updelay=1000 miimon=100"
-  BondInterfaceOvsOptions: "mode=4 lacp_rate=fast updelay=1000 use_carrier=1"
+  BondInterfaceOvsOptions: "mode=4 lacp_rate=fast updelay=1000 use_carrier=1 miimon=100"
   NeutronNetworkType: "vlan"
   NeutronNetworkVLANRanges: "datacentre:2200:2250"
