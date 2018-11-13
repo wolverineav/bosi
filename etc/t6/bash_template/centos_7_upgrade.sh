@@ -67,6 +67,9 @@ compute() {
             systemctl enable  ivs
             systemctl restart ivs
         fi
+        if [[ $pkg == *"os-vif-bigswitch"* ]]; then
+            install_pkg $pkg
+        fi
     done
 }
 

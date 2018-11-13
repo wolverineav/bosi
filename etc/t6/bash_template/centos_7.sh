@@ -79,6 +79,15 @@ compute() {
     systemctl stop neutron-metadata-agent
     systemctl disable neutron-metadata-agent
 
+    # install os-vif-bigswitch on compute nodes
+    if [[ -d $offline_dir ]]; then
+        elif [[ $pip_proxy == false ]]; then
+            pip install --upgrade "os-vif-bigswitch>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
+        else
+            pip --proxy $pip_proxy  install --upgrade "os-vif-bigswitch>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
+        fi
+    fi
+
     # install ivs
     if [[ $install_ivs == true ]]; then
         # check ivs version compatability
