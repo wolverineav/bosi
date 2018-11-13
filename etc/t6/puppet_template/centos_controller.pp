@@ -26,7 +26,7 @@ file { "/usr/lib/systemd/system/bsnlldp.service":
     ensure  => file,
     content => "
 [Unit]
-Description=BSN LLDP Script
+Description=BSN LLDP Service
 After=syslog.target network.target
 [Service]
 Type=simple
