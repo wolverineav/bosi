@@ -43,9 +43,9 @@ controller() {
     # controller nodes
     if [[ -d $offline_dir ]]; then
         elif [[ $pip_proxy == false ]]; then
-            pip install --upgrade "neutron-bsn-lldp>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
+            pip install --upgrade "neutron-bsn-lldp>=1.0.0,<1.1.0"
         else
-            pip --proxy $pip_proxy  install --upgrade "neutron-bsn-lldp>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
+            pip --proxy $pip_proxy  install --upgrade "neutron-bsn-lldp>=1.0.0,<1.1.0"
         fi
     fi
 
