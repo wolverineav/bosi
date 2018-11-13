@@ -39,6 +39,16 @@ controller() {
     systemctl stop neutron-bsn-agent
     systemctl disable neutron-bsn-agent
 
+    # if offline directory does not exist, install neutron-bsn-lldp for
+    # controller nodes
+    if [[ -d $offline_dir ]]; then
+        elif [[ $pip_proxy == false ]]; then
+            pip install --upgrade "neutron-bsn-lldp>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
+        else
+            pip --proxy $pip_proxy  install --upgrade "neutron-bsn-lldp>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
+        fi
+    fi
+
     # deploy bcf
     puppet apply --modulepath /etc/puppet/modules %(dst_dir)s/%(hostname)s.pp
 
