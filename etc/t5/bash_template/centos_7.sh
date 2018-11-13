@@ -108,7 +108,7 @@ compute() {
     # add bond to ovs
     ovs-vsctl --may-exist add-port %(br_bond)s %(bond)s
     sleep 10
-    systemctl restart send_lldp
+    systemctl restart neutron-bsn-lldp
 
     # restart neutron ovs plugin
     # this ensures connections between br-int and br-bond are created fine

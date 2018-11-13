@@ -37,9 +37,17 @@ controller() {
             systemctl enable neutron-server
             systemctl restart neutron-server
         fi
+        if [[ $pkg == *"neutronclient"* ]]; then
+            install_pkg $pkg
+        fi
         if [[ $pkg == *"horizon-bsn"* ]]; then
             install_pkg $pkg
             systemctl restart httpd
+        fi
+        if [[ $pkg == *"neutron-bsn-lldp"* ]]; then
+            install_pkg $pkg
+            systemctl enable neutron-bsn-lldp
+            systemctl restart neutron-bsn-lldp
         fi
     done
 }
@@ -83,4 +91,3 @@ fi
 set -e
 
 exit 0
-
