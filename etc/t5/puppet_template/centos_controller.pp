@@ -6,6 +6,38 @@ file { "/root/.ssh/known_hosts":
     ensure => absent,
 }
 
+# lldp
+file { "/bin/bsnlldp":
+    ensure  => file,
+    mode    => "0775",
+}
+file { "/usr/lib/systemd/system/bsnlldp.service":
+    ensure  => file,
+    content => "
+[Unit]
+Description=BSN LLDP Script
+After=syslog.target network.target
+[Service]
+Type=simple
+ExecStart=/bin/bsnlldp --system-desc 5c:16:c7:00:00:04 --system-name %(uname)s -i 10 --network_interface %(uplinks)s
+Restart=always
+StartLimitInterval=60s
+StartLimitBurst=3
+[Install]
+WantedBy=multi-user.target
+",
+}->
+file { '/etc/systemd/system/multi-user.target.wants/bsnlldp.service':
+   ensure => link,
+   target => '/usr/lib/systemd/system/bsnlldp.service',
+   notify => Service['bsnlldp'],
+}
+service { "bsnlldp":
+    ensure  => running,
+    enable  => true,
+    require => [File['/bin/bsnlldp'], File['/etc/systemd/system/multi-user.target.wants/bsnlldp.service']],
+}
+
 # glance paste config
 ini_setting { "glance-api filesystem_store_datadir":
     ensure            => present,
