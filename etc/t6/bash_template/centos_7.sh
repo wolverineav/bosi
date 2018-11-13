@@ -217,8 +217,6 @@ fi
 
 # install bsnstacklib, now known as networking-bigswitch
 if [[ $install_bsnstacklib == true ]]; then
-    sleep 2
-    pip uninstall -y bsnstacklib || true
     pip uninstall -y networking-bigswitch || true
     sleep 2
 
@@ -232,9 +230,11 @@ if [[ $install_bsnstacklib == true ]]; then
     # else online
     elif [[ $pip_proxy == false ]]; then
         pip install --upgrade "networking-bigswitch>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
+        pip install --upgrade "python-bsn-neutronclient>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
         pip install --upgrade "horizon-bsn>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
     else
         pip --proxy $pip_proxy  install --upgrade "networking-bigswitch>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
+        pip --proxy $pip_proxy  install --upgrade "python-bsn-neutronclient>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
         pip --proxy $pip_proxy  install --upgrade "horizon-bsn>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
     fi
 fi
@@ -248,4 +248,3 @@ fi
 set -e
 
 exit 0
-
