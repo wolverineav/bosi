@@ -779,7 +779,6 @@ class Helper(object):
                  'neutron_id': node.get_neutron_id(),
                  'selinux_mode': node.selinux_mode,
                  'br_int': const.BR_NAME_INT,
-                 'network_vlan_ranges': node.get_network_vlan_ranges(),
                  'br_mappings': node.get_bridge_mappings(),
                  'uname': node.uname,
                  'mtu': node.uplink_mtu,
@@ -787,7 +786,8 @@ class Helper(object):
                  'keystone_auth_user': node.keystone_auth_user,
                  'keystone_password': node.keystone_password,
                  'keystone_auth_tenant': node.keystone_auth_tenant,
-                 'bond': node.bond})
+                 'bond': node.bond,
+                 'br_bond': node.br_bond})
         puppet_script_path = (
             r'''%(setup_node_dir)s/%(generated_script_dir)s/%(hostname)s.pp'''
             % {'setup_node_dir': node.setup_node_dir,
