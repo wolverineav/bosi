@@ -24,19 +24,19 @@ exec { "load 8021q":
 }
 
 # lldp
-file { "/bin/send_lldp":
+file { "/bin/bsnlldp":
     ensure  => file,
-    mode    => "0777",
+    mode    => "0775",
 }
-file { "/usr/lib/systemd/system/send_lldp.service":
+file { "/usr/lib/systemd/system/bsnlldp.service":
     ensure  => file,
     content => "
 [Unit]
-Description=send lldp
+Description=BSN LLDP Service
 After=syslog.target network.target
 [Service]
 Type=simple
-ExecStart=/bin/send_lldp --system-desc 5c:16:c7:00:00:04 --system-name %(uname)s -i 10 --network_interface %(uplinks)s
+ExecStart=/bin/bsnlldp --system-desc 5c:16:c7:00:00:04 --system-name %(uname)s_%(br_bond)s -i 10 --network_interface %(uplinks)s
 Restart=always
 StartLimitInterval=60s
 StartLimitBurst=3
@@ -44,15 +44,15 @@ StartLimitBurst=3
 WantedBy=multi-user.target
 ",
 }->
-file { '/etc/systemd/system/multi-user.target.wants/send_lldp.service':
+file { '/etc/systemd/system/multi-user.target.wants/bsnlldp.service':
    ensure => link,
-   target => '/usr/lib/systemd/system/send_lldp.service',
-   notify => Service['send_lldp'],
+   target => '/usr/lib/systemd/system/bsnlldp.service',
+   notify => Service['bsnlldp'],
 }
-service { "send_lldp":
+service { "bsnlldp":
     ensure  => running,
     enable  => true,
-    require => [File['/bin/send_lldp'], File['/etc/systemd/system/multi-user.target.wants/send_lldp.service']],
+    require => [File['/bin/bsnlldp'], File['/etc/systemd/system/multi-user.target.wants/bsnlldp.service']],
 }
 
 # bond configuration

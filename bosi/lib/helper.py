@@ -37,7 +37,8 @@ def has_min_req_packages(dir_path):
 
     :rtype boolean
     """
-    req_packages = ['networking-bigswitch', 'horizon-bsn']
+    req_packages = ['networking-bigswitch', 'horizon-bsn',
+                    'python-bsn-neutronclient', 'neutron-bsn-lldp']
     all_packages = []
     for file in listdir(dir_path):
         if isfile(join(dir_path, file)):
@@ -778,7 +779,6 @@ class Helper(object):
                  'neutron_id': node.get_neutron_id(),
                  'selinux_mode': node.selinux_mode,
                  'br_int': const.BR_NAME_INT,
-                 'network_vlan_ranges': node.get_network_vlan_ranges(),
                  'br_mappings': node.get_bridge_mappings(),
                  'uname': node.uname,
                  'mtu': node.uplink_mtu,
@@ -786,7 +786,8 @@ class Helper(object):
                  'keystone_auth_user': node.keystone_auth_user,
                  'keystone_password': node.keystone_password,
                  'keystone_auth_tenant': node.keystone_auth_tenant,
-                 'bond': node.bond})
+                 'bond': node.bond,
+                 'br_bond': node.br_bond})
         puppet_script_path = (
             r'''%(setup_node_dir)s/%(generated_script_dir)s/%(hostname)s.pp'''
             % {'setup_node_dir': node.setup_node_dir,
@@ -1440,9 +1441,10 @@ class Helper(object):
         # available
         if env.offline_dir:
             if not has_min_req_packages(env.offline_dir):
-                safe_print("Either networking-bigswitch or horizon-bsn is "
-                           "missing in the offline_dir. Please check again "
-                           "and retry.")
+                safe_print("One of the packages from the list is missing. "
+                           "Please check again and retry. Must include: "
+                           "networking-bigswitch, horizon-bsn, "
+                           "python-bsn-neutronclient, neutron-bsn-lldp")
                 exit(1)
 
         # wget ivs packages
@@ -1778,7 +1780,8 @@ class Helper(object):
             clear_dir_cmd = (r'''rm -rf %(dst_dir)s/*''' % {'dst_dir': dst_dir})
             Helper.run_command_on_remote_without_timeout(node, clear_dir_cmd)
             for pkg in node.offline_pkgs:
-                if (node.role != const.ROLE_COMPUTE) and ("ivs" in pkg):
+                if ((node.role != const.ROLE_COMPUTE) and
+                        ("ivs" in pkg or "os-vif-bigswitch" in pkg)):
                     continue
                 safe_print("Copy %(pkg)s to %(hostname)s\n" %
                           {'pkg': pkg, 'hostname': node.fqdn})

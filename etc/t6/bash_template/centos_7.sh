@@ -39,6 +39,16 @@ controller() {
     systemctl stop neutron-bsn-agent
     systemctl disable neutron-bsn-agent
 
+    # if offline directory does not exist, install neutron-bsn-lldp for
+    # controller nodes
+    if [[ -d $offline_dir ]]; then
+        elif [[ $pip_proxy == false ]]; then
+            pip install --upgrade "neutron-bsn-lldp>=1.0.0,<1.1.0"
+        else
+            pip --proxy $pip_proxy  install --upgrade "neutron-bsn-lldp>=1.0.0,<1.1.0"
+        fi
+    fi
+
     # deploy bcf
     puppet apply --modulepath /etc/puppet/modules %(dst_dir)s/%(hostname)s.pp
 
@@ -68,6 +78,15 @@ compute() {
     systemctl disable neutron-dhcp-agent
     systemctl stop neutron-metadata-agent
     systemctl disable neutron-metadata-agent
+
+    # install os-vif-bigswitch on compute nodes
+    if [[ -d $offline_dir ]]; then
+        elif [[ $pip_proxy == false ]]; then
+            pip install --upgrade "os-vif-bigswitch>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
+        else
+            pip --proxy $pip_proxy  install --upgrade "os-vif-bigswitch>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
+        fi
+    fi
 
     # install ivs
     if [[ $install_ivs == true ]]; then
@@ -217,8 +236,6 @@ fi
 
 # install bsnstacklib, now known as networking-bigswitch
 if [[ $install_bsnstacklib == true ]]; then
-    sleep 2
-    pip uninstall -y bsnstacklib || true
     pip uninstall -y networking-bigswitch || true
     sleep 2
 
@@ -232,9 +249,11 @@ if [[ $install_bsnstacklib == true ]]; then
     # else online
     elif [[ $pip_proxy == false ]]; then
         pip install --upgrade "networking-bigswitch>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
+        pip install --upgrade "python-bsn-neutronclient>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
         pip install --upgrade "horizon-bsn>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
     else
         pip --proxy $pip_proxy  install --upgrade "networking-bigswitch>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
+        pip --proxy $pip_proxy  install --upgrade "python-bsn-neutronclient>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
         pip --proxy $pip_proxy  install --upgrade "horizon-bsn>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
     fi
 fi
@@ -248,4 +267,3 @@ fi
 set -e
 
 exit 0
-
