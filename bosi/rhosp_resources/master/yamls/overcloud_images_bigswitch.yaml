@@ -7,6 +7,6 @@ parameter_defaults:
   DockerHorizonImage: <REGISTRY_IP>:8787/bigswitch/rhosp13-openstack-horizon-bigswitch:13.0-4
   DockerHorizonConfigImage: <REGISTRY_IP>:8787/bigswitch/rhosp13-openstack-horizon-bigswitch:13.0-4
 # uncomment for PV mode  
-#  DockerNeutronBigswitchAgentImage: <REGISTRY_IP>:8787/bigswitch/rhosp13-openstack-neutron-server-bigswitch:13.0-1
+#  DockerNeutronBigswitchAgentImage: <REGISTRY_IP>:8787/bigswitch/rhosp13-openstack-neutron-server-bigswitch:13.0-3
 #  DockerNovaComputeImage: <REGISTRY_IP>:8787/bigswitch/rhosp13-openstack-nova-compute-bigswitch:13.0-2
 #  DockerNovaLibvirtConfigImage: <REGISTRY_IP>:8787/bigswitch/rhosp13-openstack-nova-compute-bigswitch:13.0-2
